@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrabbleWeb", "ScrabbleWeb\ScrabbleWeb.csproj", "{0943F285-3CB1-449A-9B83-4CB64CFED70A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrabbleGame", "ScrabbleGame\ScrabbleGame.csproj", "{0A1A1AC1-EC0C-4644-B860-820B57ED21AB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6660E48C-D684-408F-93F7-BC683854056C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrabbleGameTests", "ScrabbleGameTests\ScrabbleGameTests.csproj", "{563C9013-A76E-4CF4-9620-82743E785A95}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrabbleData", "ScrabbleData\ScrabbleData.csproj", "{193517EB-DDDD-4CFA-94BE-7A4B60D52FB2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3960A128-0F91-4AF1-A4B9-E4C3FCE14FBF}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0943F285-3CB1-449A-9B83-4CB64CFED70A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0943F285-3CB1-449A-9B83-4CB64CFED70A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0943F285-3CB1-449A-9B83-4CB64CFED70A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0943F285-3CB1-449A-9B83-4CB64CFED70A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A1A1AC1-EC0C-4644-B860-820B57ED21AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A1A1AC1-EC0C-4644-B860-820B57ED21AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A1A1AC1-EC0C-4644-B860-820B57ED21AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A1A1AC1-EC0C-4644-B860-820B57ED21AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{563C9013-A76E-4CF4-9620-82743E785A95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{563C9013-A76E-4CF4-9620-82743E785A95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{563C9013-A76E-4CF4-9620-82743E785A95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{563C9013-A76E-4CF4-9620-82743E785A95}.Release|Any CPU.Build.0 = Release|Any CPU
+		{193517EB-DDDD-4CFA-94BE-7A4B60D52FB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{193517EB-DDDD-4CFA-94BE-7A4B60D52FB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{193517EB-DDDD-4CFA-94BE-7A4B60D52FB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{193517EB-DDDD-4CFA-94BE-7A4B60D52FB2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{563C9013-A76E-4CF4-9620-82743E785A95} = {6660E48C-D684-408F-93F7-BC683854056C}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2F0DB02B-D005-47FC-8598-5014FDB7AC79}
+	EndGlobalSection
+EndGlobal
