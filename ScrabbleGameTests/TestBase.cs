@@ -27,5 +27,27 @@ namespace ScrabbleGameTests
             GameData data = new GameData { Board = board };
             return new Game(data);
         }
+
+        protected Game GetGameWithSingleVerticalWordAtTop()
+        {
+            string board = "  T            " + // TEST starts at position 2, 0
+                           "  E            " +
+                           "  S            " +
+                           "  T            " + // and extends to position 2, 3
+                           string.Concat(Enumerable.Repeat("               ", 11));
+            GameData data = new GameData { Board = board };
+            return new Game(data);
+        }
+
+        protected Game GetGameWithSingleVerticalWordAtBottom()
+        {
+            string board = string.Concat(Enumerable.Repeat("               ", 11)) +
+                           "  T            " + // TEST starts at position 2, 11
+                           "  E            " +
+                           "  S            " +
+                           "  T            ";  // and extends to position 2, 14
+            GameData data = new GameData { Board = board };
+            return new Game(data);
+        }
     }
 }

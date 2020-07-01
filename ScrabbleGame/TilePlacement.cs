@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ScrabbleGame
 {
-    public struct TilePlacement
+    public class TilePlacement
     {
         public int X { get; set; }
         public int Y { get; set; }

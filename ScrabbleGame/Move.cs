@@ -73,13 +73,59 @@ namespace ScrabbleGame
         internal List<string> FindWords()
         {
             if (isValidMove == null) throw new InvalidOperationException("Move validity has not been checked");
-            if (isValidMove == false) throw new InvalidOperationException("Not a valid move");
+            if (isValidMove == false || moveDirection == Direction.NotALine) throw new InvalidOperationException("Not a valid move");
 
-            throw new NotImplementedException();
+            List<string> results = new List<string>();
+
+            if (moveDirection == Direction.SingleTile)
+            {
+                throw new NotImplementedException();
+            }
+
+
+            // Check the main word that's been played
+            StringBuilder sb = new StringBuilder();
+            int i; // N.b. used for the loop, and then continues after the loop ends
+            for (i = minColOrRow; i <= maxColOrRow; i++)
+            {
+                sb.Append(moveDirection == Direction.Horizontal ? GetTileAt(i, rowOrColNumber) : GetTileAt(rowOrColNumber, i));
+            }
+            // Are the existing letters before/after it?
+            bool atEdge = i >= (moveDirection == Direction.Horizontal ? Game.BOARD_WIDTH : Game.BOARD_HEIGHT);
+            char nextChar;
+
+            while (!atEdge && (nextChar = game[moveDirection == Direction.Horizontal ? i : rowOrColNumber,
+                                               moveDirection == Direction.Horizontal ? rowOrColNumber : i]) != ' ')
+            {
+                sb.Append(nextChar);
+                i++;
+                atEdge = i >= (moveDirection == Direction.Horizontal ? Game.BOARD_WIDTH : Game.BOARD_HEIGHT);
+            }
+
+            i = minColOrRow - 1;
+            atEdge = i < 0;
+            while (!atEdge && (nextChar = game[moveDirection == Direction.Horizontal ? i : rowOrColNumber,
+                                               moveDirection == Direction.Horizontal ? rowOrColNumber : i]) != ' ')
+            {
+                sb.Insert(0, nextChar);
+                i--;
+                atEdge = i < 0;
+            }
+
+            results.Add(sb.ToString());
+
+            // Check for any intersecting words
+
+
+            return results;
         }
 
         private void SetMoveData()
         {
+            // This method should only be called when placements have changed
+            // Therefore, we can't know if it's valid until we explicitly check its validity
+            isValidMove = null;
+
             if (placements.Count == 1)
             {
                 moveDirection = Direction.SingleTile;
@@ -131,6 +177,10 @@ namespace ScrabbleGame
             {
                 return false;
             }
+            if (moveDirection == Direction.SingleTile)
+            {
+                return true;
+            }
 
             // We've now established that the tiles are in a line
             // The next thing to check is whether there are any gaps in that line, or tiles
@@ -155,8 +205,8 @@ namespace ScrabbleGame
                 positions.Remove(val);
             }
 
-            // Anything left in positions now means the position is not specified. That's ok,
-            // so long as the board already has a tile in that position
+            // Anything left in positions now means the position is mid-word and has not been played in.
+            // That's ok, so long as the board already has a tile in that position
             foreach (int val in positions)
             {
                 char currentTile = moveDirection == Direction.Horizontal ? game[val, rowOrColNumber] : game[rowOrColNumber, val];
@@ -191,6 +241,21 @@ namespace ScrabbleGame
             }
 
             return false;
+        }
+
+        private char GetTileAt(int x, int y)
+        {
+            char result = game[x, y];
+            if (result == ' ') // No tile on the board - see if there's a placement in this position
+            {
+                var placement = placements.SingleOrDefault(p => p.X == x && p.Y == y);
+                if (placement != null)
+                {
+                    result = placement.Tile;
+                }
+            }
+
+            return result;
         }
     }
 }
