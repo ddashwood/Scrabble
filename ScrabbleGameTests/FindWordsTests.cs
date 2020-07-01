@@ -14,6 +14,7 @@ namespace ScrabbleGameTests
             Game game = GetGameWithSingleVerticalWord();
             Move move = new Move(game, new List<TilePlacement>
             {
+                new TilePlacement(0, 2, 'B'),
                 new TilePlacement(1, 2, 'B')
             });
 
@@ -90,10 +91,30 @@ namespace ScrabbleGameTests
             Assert.Contains("TESTER", actual);
         }
 
+        [Fact]
+        public void GetNewWordsFindCrossWordsTest()
+        {
+            Game game = GetGameWithSingleVerticalWord();
+            Move move = new Move(game, new List<TilePlacement>
+            {
+                new TilePlacement(1, 2, 'B'),
+                new TilePlacement(1, 3, 'L'),
+                new TilePlacement(1, 4, 'O'),
+                new TilePlacement(1, 5, 'B')
+            });
+
+            Assert.True(move.IsValidMove(out string _));
+            List<string> actual = move.FindWords();
+            List<string> expected = new List<string> { "BLOB", "LT", "OE", "BS" };
+
+            actual.Sort();
+            expected.Sort();
+
+            Assert.Equal(expected, actual);
+        }
 
         // TO DO NEXT
 
-        // Intersecting words (will probably want to factor out code to extend left/right/up/down
         // Single letter placement
     }
 }
