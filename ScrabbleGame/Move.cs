@@ -8,14 +8,6 @@ namespace ScrabbleGame
 {
     public class Move
     {
-        private enum Direction
-        {
-            Horizontal,
-            Vertical,
-            SingleTile,
-            NotALine = 99
-        }
-
         private readonly Game game;
         private readonly List<TilePlacement> placements = new List<TilePlacement>();
 
@@ -51,6 +43,17 @@ namespace ScrabbleGame
             SetDirectionStrategy();
         }
 
+        public int GetScore(out string error)
+        {
+            if (!IsValidMove(out error))
+            {
+                return 0;
+            }
+
+            var words = FindWords();
+            return words.Sum(w => w.Score);
+        }
+
         internal bool IsValidMove(out string error)
         {
             isValidMove = false;
@@ -73,61 +76,6 @@ namespace ScrabbleGame
 
             isValidMove = true;
             return true;
-        }
-
-        internal List<string> FindWords()
-        {
-            if (isValidMove == null) throw new InvalidOperationException("Move validity has not been checked");
-            if (isValidMove == false) throw new InvalidOperationException("Not a valid move");
-
-            List<string> results = new List<string>();
-
-
-            // Check the main word that's been played
-            StringBuilder mainWord = new StringBuilder();
-            foreach(char tile in directionStrategy.WordTiles(GetTileAt))
-            {
-                mainWord.Append(tile);
-            }
-
-            // Are the existing letters before/after it?
-            foreach (char tile in directionStrategy.BeforeWordTiles((x, y) => game[x, y]))
-            {
-                mainWord.Insert(0, tile);
-            }
-            foreach (char tile in directionStrategy.AfterWordTiles((x, y) => game[x,y]))
-            {
-                mainWord.Append(tile);
-            }
-
-            if (mainWord.Length > 1)
-            {
-                results.Add(mainWord.ToString());
-            }
-
-            // Check for any intersecting words
-
-            foreach (var placement in placements)
-            {
-                var oppositeStrategy = directionStrategy.GetOppositeStrategy(placement);
-                var crossWord = new StringBuilder(placement.Tile.ToString());
-
-                foreach (char tile in oppositeStrategy.BeforeWordTiles((x, y) => game[x,y]))
-                {
-                    crossWord.Insert(0, tile);
-                }
-                foreach (char tile in oppositeStrategy.AfterWordTiles((x, y) => game[x,y]))
-                {
-                    crossWord.Append(tile);
-                }
-
-                if(crossWord.Length > 1)
-                {
-                    results.Add(crossWord.ToString());
-                }
-            }
-
-            return results;
         }
 
         private bool IsUsingCentreSquare() =>
@@ -241,6 +189,65 @@ namespace ScrabbleGame
             }
 
             return false;
+        }
+
+        internal List<PlayedWord> FindWords()
+        {
+            if (isValidMove == null) throw new InvalidOperationException("Move validity has not been checked");
+            if (isValidMove == false) throw new InvalidOperationException("Not a valid move");
+
+            List<PlayedWord> results = new List<PlayedWord>();
+
+            // Check the main word that's been played
+            PlayedWordBuilder mainWordBuilder = new PlayedWordBuilder();
+            foreach (PlayedWordLetter tile in directionStrategy.WordTiles(
+                (x,y) => placements.SingleOrDefault(p => p.X == x && p.Y == y)?.Tile ?? ' ',
+                (x,y) => game[x,y]))
+            {
+                mainWordBuilder.AddBoardTileAtEnd(tile);
+            }
+
+            // Are the existing letters before/after it?
+            foreach (PlayedWordLetter tile in directionStrategy.BeforeWordTiles((x, y) => game[x, y]))
+            {
+                mainWordBuilder.AddBoardTileAtStart(tile);
+            }
+            foreach (PlayedWordLetter tile in directionStrategy.AfterWordTiles((x, y) => game[x, y]))
+            {
+                mainWordBuilder.AddBoardTileAtEnd(tile);
+            }
+
+            var mainWord = mainWordBuilder.GetPlayedWord();
+            if (mainWord.ToString().Length > 1)
+            {
+                results.Add(mainWord);
+            }
+
+            // Check for any intersecting words
+
+            foreach (var placement in placements)
+            {
+                var oppositeStrategy = directionStrategy.GetOppositeStrategy(placement);
+                var crossWordBuilder = new PlayedWordBuilder();
+                crossWordBuilder.AddBoardTileAtStart(new PlayedWordLetter(placement.Tile, placement.X, placement.Y));
+
+                foreach (PlayedWordLetter tile in oppositeStrategy.BeforeWordTiles((x, y) => game[x, y]))
+                {
+                    crossWordBuilder.AddBoardTileAtStart(tile);
+                }
+                foreach (PlayedWordLetter tile in oppositeStrategy.AfterWordTiles((x, y) => game[x, y]))
+                {
+                    crossWordBuilder.AddBoardTileAtEnd(tile);
+                }
+
+                var crossWord = crossWordBuilder.GetPlayedWord();
+                if (crossWord.ToString().Length > 1)
+                {
+                    results.Add(crossWord);
+                }
+            }
+
+            return results;
         }
 
         private char GetTileAt(int x, int y)

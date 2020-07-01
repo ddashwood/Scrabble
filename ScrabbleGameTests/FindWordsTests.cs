@@ -38,7 +38,7 @@ namespace ScrabbleGameTests
             });
 
             Assert.True(move.IsValidMove(out string _));
-            List<string> actual = move.FindWords();
+            List<string> actual = move.FindWords().ToStringList();
 
             Assert.Contains("BLOB", actual);
         }
@@ -54,7 +54,7 @@ namespace ScrabbleGameTests
             });
 
             Assert.True(move.IsValidMove(out string _));
-            List<string> actual = move.FindWords();
+            List<string> actual = move.FindWords().ToStringList();
 
             Assert.Contains("RETEST", actual);
         }
@@ -70,7 +70,7 @@ namespace ScrabbleGameTests
             });
 
             Assert.True(move.IsValidMove(out string _));
-            List<string> actual = move.FindWords();
+            List<string> actual = move.FindWords().ToStringList();
 
             Assert.Contains("RETEST", actual);
         }
@@ -86,7 +86,7 @@ namespace ScrabbleGameTests
             });
 
             Assert.True(move.IsValidMove(out string _));
-            List<string> actual = move.FindWords();
+            List<string> actual = move.FindWords().ToStringList();
 
             Assert.Contains("TESTER", actual);
         }
@@ -104,7 +104,7 @@ namespace ScrabbleGameTests
             });
 
             Assert.True(move.IsValidMove(out string _));
-            List<string> actual = move.FindWords();
+            List<string> actual = move.FindWords().ToStringList();
             List<string> expected = new List<string> { "BLOB", "LT", "OE", "BS" };
 
             actual.Sort();
@@ -123,7 +123,7 @@ namespace ScrabbleGameTests
             });
 
             Assert.True(move.IsValidMove(out string _));
-            List<string> actual = move.FindWords();
+            List<string> actual = move.FindWords().ToStringList();
             List<string> expected = new List<string> { "SB" };
 
             Assert.Equal(expected, actual);
@@ -139,7 +139,7 @@ namespace ScrabbleGameTests
             });
 
             Assert.True(move.IsValidMove(out string _));
-            List<string> actual = move.FindWords();
+            List<string> actual = move.FindWords().ToStringList();
             List<string> expected = new List<string> { "BE" };
 
             Assert.Equal(expected, actual);

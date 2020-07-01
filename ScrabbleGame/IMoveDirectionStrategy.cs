@@ -8,9 +8,9 @@ namespace ScrabbleGame
     {
         bool TryAdjustMinMax(TilePlacement placement);
         HashSet<(int x, int y)> GetAllSpacesInMainWord();
-        IEnumerable<char> WordTiles(Func<int, int, char> tileGetter);
-        IEnumerable<char> BeforeWordTiles(Func<int, int, char> tileGetter);
-        IEnumerable<char> AfterWordTiles(Func<int, int, char> tileGetter);
+        IEnumerable<PlayedWordLetter> WordTiles(Func<int, int, char> userTileGetter, Func<int, int, char> boardTileGetter);
+        IEnumerable<PlayedWordLetter> BeforeWordTiles(Func<int, int, char> boardTileGetter);
+        IEnumerable<PlayedWordLetter> AfterWordTiles(Func<int, int, char> boardTileGetter);
         IMoveDirectionStrategy GetOppositeStrategy(TilePlacement placement);
     }
 }
