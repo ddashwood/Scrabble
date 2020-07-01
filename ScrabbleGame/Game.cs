@@ -55,5 +55,7 @@ namespace ScrabbleGame
                 gameData.Board = new string(spaces);
             }
         }
+
+        internal bool IsFirstMove() => gameData.Board.All(c => c == ' ');
     }
 }

@@ -59,9 +59,14 @@ namespace ScrabbleGame
                 error = "No tile placements supplied";
                 return false;
             }
-            if (!TouchesExistingTile() || !InAValidLine())
+            if (!InAValidLine() || (!TouchesExistingTile() && !game.IsFirstMove()))
             {
                 error = "Invalid tile placement";
+                return false;
+            }
+            if (game.IsFirstMove() && !IsUsingCentreSquare())
+            {
+                error = "Not on centre square";
                 return false;
             }
             error = string.Empty;
@@ -124,6 +129,10 @@ namespace ScrabbleGame
 
             return results;
         }
+
+        private bool IsUsingCentreSquare() =>
+            placements.Any(p => p.X == (Game.BOARD_WIDTH - 1) / 2 &&
+                                p.Y == (Game.BOARD_HEIGHT - 1) / 2);
 
         private void SetDirectionStrategy()
         {
