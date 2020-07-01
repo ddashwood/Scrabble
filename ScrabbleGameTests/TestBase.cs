@@ -49,5 +49,15 @@ namespace ScrabbleGameTests
             GameData data = new GameData { Board = board };
             return new Game(data);
         }
+
+        protected Game GetGameWithSingleHorizontalWord()
+        {
+            string board = string.Concat(Enumerable.Repeat("               ", 6)) +
+                           "  TEST         " + // TEST starts at position 2, 6
+                                               // and extends to position 5, 6
+                           string.Concat(Enumerable.Repeat("               ", 8));
+            GameData data = new GameData { Board = board };
+            return new Game(data);
+        }
     }
 }

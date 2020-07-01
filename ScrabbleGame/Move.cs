@@ -19,9 +19,13 @@ namespace ScrabbleGame
         private readonly Game game;
         private readonly List<TilePlacement> placements = new List<TilePlacement>();
 
-        private bool? isValidMove = null;
-
+        // Set by SetDirectionStrategy(), which is called whenever the
+        // list of placements changes, so should always be correct.
+        // Set to null when the tiles do not form a straight line
         private IMoveDirectionStrategy directionStrategy;
+
+        // Set by IsValidMove(), which is called explicitly when needed
+        private bool? isValidMove = null;
 
         public Move(Game game)
         {
@@ -33,18 +37,18 @@ namespace ScrabbleGame
             :this(game)
         {
             this.placements = placements;
-            SetMoveData();
+            SetDirectionStrategy();
         }
 
         public void AddPlacement(TilePlacement placement)
         {
             placements.Add(placement);
-            SetMoveData();
+            SetDirectionStrategy();
         }
         public void RemovePlacementAtPosition(int x, int y)
         {
             placements.Remove(placements.Single(p => p.X == x && p.Y == y));
-            SetMoveData();
+            SetDirectionStrategy();
         }
 
         internal bool IsValidMove(out string error)
@@ -91,7 +95,10 @@ namespace ScrabbleGame
                 mainWord.Append(tile);
             }
 
-            results.Add(mainWord.ToString());
+            if (mainWord.Length > 1)
+            {
+                results.Add(mainWord.ToString());
+            }
 
             // Check for any intersecting words
 
@@ -118,7 +125,7 @@ namespace ScrabbleGame
             return results;
         }
 
-        private void SetMoveData()
+        private void SetDirectionStrategy()
         {
             // This method should only be called when placements have changed
             // Therefore, we can't know if it's valid until we explicitly check its validity
@@ -127,7 +134,9 @@ namespace ScrabbleGame
 
             if (placements.Count == 1)
             {
-                throw new NotImplementedException("Still have to deal with placing a single tile...");
+                // Either horizontal or vertical would work here...
+                directionStrategy = new MoveDirectionStrategyHorizontal(placements[0].X, placements[0].X, placements[0].Y);
+                return;
             }
 
             var first = placements[0];

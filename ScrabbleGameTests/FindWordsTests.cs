@@ -113,8 +113,36 @@ namespace ScrabbleGameTests
             Assert.Equal(expected, actual);
         }
 
-        // TO DO NEXT
+        [Fact]
+        public void GetNewWordsSingleTileHorizontalTest()
+        {
+            Game game = GetGameWithSingleVerticalWord();
+            Move move = new Move(game, new List<TilePlacement>
+            {
+                new TilePlacement(3, 5, 'B')
+            });
 
-        // Single letter placement
+            Assert.True(move.IsValidMove(out string _));
+            List<string> actual = move.FindWords();
+            List<string> expected = new List<string> { "SB" };
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void GetNewWordsSingleTileVerticalTest()
+        {
+            Game game = GetGameWithSingleHorizontalWord();
+            Move move = new Move(game, new List<TilePlacement>
+            {
+                new TilePlacement(3, 5, 'B')
+            });
+
+            Assert.True(move.IsValidMove(out string _));
+            List<string> actual = move.FindWords();
+            List<string> expected = new List<string> { "BE" };
+
+            Assert.Equal(expected, actual);
+        }
     }
 }
