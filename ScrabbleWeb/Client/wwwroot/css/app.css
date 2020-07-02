@@ -4,6 +4,10 @@
     font-family: Open_Sans;
     src: url(/fonts/Open_Sans/OpenSans-Regular.ttf);
 }
+@font-face {
+    font-family: Open_Sans_Bold;
+    src: url(/fonts/Open_Sans/OpenSans-Bold.ttf);
+}
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -211,6 +215,13 @@ app {
     line-height: 1.5rem;
 }
 
+.board-content-centre {
+    width: 1.5rem;
+    height: 1.5rem;
+    line-height: 1.5rem;
+    background-color: lightpink;
+}
+
 .double-letter .board-content-container {
     background-color: paleturquoise;
 }
@@ -228,11 +239,16 @@ app {
 
 .board-content {
     text-align: center;
-    font-family: 'Open_Sans';
+    font-family: 'Open_Sans_Bold';
     font-size: small;
+    font-weight: bolder;
     max-width: 1.3rem;
     position: relative;
     left: -2px;
+}
+
+.board-content-centre .board-content {
+    left: 0;
 }
 
 .board-content-multiplier1, .board-content-multiplier2, .board-content-score {

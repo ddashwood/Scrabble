@@ -47,20 +47,26 @@ else
                         @{
                             if (tile != ' ')
                             {
-                                                <div class="board-content-container">
-                                                    <div class="board-content">@tile.ToString().ToUpper()</div>
-                                                    @*Non-capital means a blank tile, so no score*@
-                                                    @if (tile >= 'A' && tile <= 'Z')
-                                                    {
-                                                        <div class="board-content-score">@Game.LetterScore(tile)</div>
-                                                    }
-                                                </div>
+                                <div class="board-content-container">
+                                    <div class="board-content">@tile.ToString().ToUpper()</div>
+                                    @*Non-capital means a blank tile, so no score*@
+                                    @if (tile >= 'A' && tile <= 'Z')
+                                    {
+                                        <div class="board-content-score">@Game.LetterScore(tile)</div>
+                                    }
+                                </div>
                             }
                             else if (!string.IsNullOrEmpty(multiplierClass))
                             {
                                 <div class="board-content-container">
                                     <div class="board-content-multiplier1">@char1</div>
                                     <div class="board-content-multiplier2">@char2</div>
+                                </div>
+                            }
+                            else if (x == (Game.BOARD_WIDTH - 1) / 2 && y == (Game.BOARD_HEIGHT - 1) / 2)
+                            {
+                                <div class="board-content-centre">
+                                    <div class="board-content"><span class="oi oi-star" aria-hidden="true"></span></div>
                                 </div>
                             }
                         }
