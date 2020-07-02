@@ -1,0 +1,83 @@
+﻿@page "/game/{gameId:int}"
+@using ScrabbleGame
+@using ScrabbleData
+@inject HttpClientNoAuth Http
+
+<h3>Game</h3>
+
+<p>Showing game number @GameId</p>
+
+@if (game == null)
+{
+    <p>Loading game</p>
+}
+else
+{
+    <div class="board">
+        @for (int y = 0; y < Game.BOARD_HEIGHT; y++)
+        {
+            <div class="board-row">
+                @for (int x = 0; x < Game.BOARD_WIDTH; x++)
+                {
+                    char tile = game[x, y];
+                    var multiplier = Game.SquareMultiplier(x, y);
+                    string multiplierClass = "";
+                    string char1 = "";
+                    string char2 = "";
+
+                    if (tile == ' ') // Multipliers only affect tiles that aren't played on yet
+                    {
+                        switch (multiplier)
+                        {
+                            case Multiplier.DoubleLetter:
+                                (multiplierClass, char1, char2) = ("double-letter", "D", "L");
+                                break;
+                            case Multiplier.TrippleLetter:
+                                (multiplierClass, char1, char2) = ("tripple-letter", "T", "L");
+                                break;
+                            case Multiplier.DoubleWord:
+                                (multiplierClass, char1, char2) = ("double-word", "D", "W");
+                                break;
+                            case Multiplier.TrippleWord:
+                                (multiplierClass, char1, char2) = ("tripple-word", "T", "W");
+                                break;
+                        }
+                    }
+                    <div class="board-square @multiplierClass">
+                        @{
+                            if (tile != ' ')
+                            {
+                                                <div class="board-content-container">
+                                                    <div class="board-content">@tile.ToString().ToUpper()</div>
+                                                    @*Non-capital means a blank tile, so no score*@
+                                                    @if (tile >= 'A' && tile <= 'Z')
+                                                    {
+                                                        <div class="board-content-score">@Game.LetterScore(tile)</div>
+                                                    }
+                                                </div>
+                            }
+                            else if (!string.IsNullOrEmpty(multiplierClass))
+                            {
+                                <div class="board-content-container">
+                                    <div class="board-content-multiplier1">@char1</div>
+                                    <div class="board-content-multiplier2">@char2</div>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    [Parameter] public int GameId { get; set; }
+    Game game;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var data = await Http.GetFromJsonAsync<GameData>($"/api/game/{GameId}");
+        game = new Game(data);
+    }
+}

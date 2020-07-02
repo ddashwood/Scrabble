@@ -64,7 +64,7 @@ namespace ScrabbleGame
             this.wordChecker = wordChecker;
         }
 
-        internal static int LetterScore(char tile)
+        public static int LetterScore(char tile)
         {
             if (letterScores.TryGetValue(tile, out int score))
             {
@@ -72,7 +72,7 @@ namespace ScrabbleGame
             }
             return 0;
         }
-        internal static Multiplier SquareMultiplier(int x, int y)
+        public static Multiplier SquareMultiplier(int x, int y)
         {
             if (multipliers.TryGetValue((x, y), out Multiplier result))
             {

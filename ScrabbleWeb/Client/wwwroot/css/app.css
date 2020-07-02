@@ -1,5 +1,10 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+@font-face {
+    font-family: Open_Sans;
+    src: url(/fonts/Open_Sans/OpenSans-Regular.ttf);
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -180,4 +185,73 @@ app {
         /* Never collapse the sidebar for wide screens */
         display: block;
     }
+}
+
+.board-row {
+    display:flex;
+}
+
+.board-square {
+    display:inline-flex;
+    height:1.5rem;
+    width:1.5rem;
+    max-width:1.5rem;
+    border:1px solid black;
+    vertical-align:top;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+}
+
+.board-square .board-content-container {
+    background-color: wheat;
+    width: 1.5rem;
+    height: 1.5rem;
+    position: relative;
+    line-height: 1.5rem;
+}
+
+.double-letter .board-content-container {
+    background-color: paleturquoise;
+}
+.tripple-letter .board-content-container {
+    background-color: blue;
+    color:white;
+}
+.double-word .board-content-container {
+    background-color: lightpink;
+}
+.tripple-word .board-content-container {
+    background-color: red;
+    color:white;
+}
+
+.board-content {
+    text-align: center;
+    font-family: 'Open_Sans';
+    font-size: small;
+    max-width: 1.3rem;
+    position: relative;
+    left: -2px;
+}
+
+.board-content-multiplier1, .board-content-multiplier2, .board-content-score {
+    font-size: xx-small;
+    position: absolute;
+    line-height: 100%;
+}
+
+.board-content-multiplier1 {
+    bottom: 48%;
+    right: 52%;
+}
+
+.board-content-multiplier2 {
+    top:48%;
+    left:52%
+}
+
+.board-content-score {
+    top:1px;
+    right:1px;
 }

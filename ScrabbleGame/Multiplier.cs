@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ScrabbleGame
 {
-    enum Multiplier
+    public enum Multiplier
     {
         None,
         DoubleLetter,
