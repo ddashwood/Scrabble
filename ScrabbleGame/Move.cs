@@ -229,7 +229,7 @@ namespace ScrabbleGame
             {
                 var oppositeStrategy = directionStrategy.GetOppositeStrategy(placement);
                 var crossWordBuilder = new PlayedWordBuilder();
-                crossWordBuilder.AddBoardTileAtStart(new PlayedWordLetter(placement.Tile, placement.X, placement.Y));
+                crossWordBuilder.AddBoardTileAtStart(PlayedWordLetter.CreateWithBoardMultiplier(placement.Tile, placement.X, placement.Y));
 
                 foreach (PlayedWordLetter tile in oppositeStrategy.BeforeWordTiles((x, y) => game[x, y]))
                 {
