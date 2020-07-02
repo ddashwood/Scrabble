@@ -1,6 +1,4 @@
-﻿using IdentityServer4.Test;
-using Microsoft.EntityFrameworkCore.Query.Internal;
-using ScrabbleData;
+﻿using ScrabbleData;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

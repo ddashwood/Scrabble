@@ -32,7 +32,8 @@ namespace ScrabbleGame
 
         public HashSet<(int x, int y)> GetAllSpacesInMainWord()
         {
-            return Enumerable.Range(minY, maxY - minY + 1).Select(y => (x, y)).ToHashSet();
+            var spaces = Enumerable.Range(minY, maxY - minY + 1).Select(y => (x, y));
+            return new HashSet<(int x, int y)>(spaces);
         }
 
         public IEnumerable<PlayedWordLetter> WordTiles(Func<int, int, char> userTileGetter, Func<int, int, char> boardTileGetter)
