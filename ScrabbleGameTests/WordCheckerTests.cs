@@ -5,7 +5,7 @@ using Xunit;
 
 namespace ScrabbleGameTests
 {
-    public class WordCheckerTests
+    public class WordCheckerTests : TestBase
     {
         [Fact]
         public void IsWordTest()
@@ -16,7 +16,6 @@ namespace ScrabbleGameTests
             {
                 wordChecker = new FileWordChecker(wordsStream);
                 Assert.True(wordChecker.IsWord("cat"));
-
             }
 
             // We should still be able to check words even after the stream is destroyed
@@ -24,16 +23,6 @@ namespace ScrabbleGameTests
             Assert.True(wordChecker.IsWord("rabbit"));
             Assert.False(wordChecker.IsWord("dog"));
             Assert.False(wordChecker.IsWord("rab"));
-        }
-
-        private static Stream GenerateStreamFromString(string s)
-        {
-            var stream = new MemoryStream();
-            var writer = new StreamWriter(stream);
-            writer.Write(s);
-            writer.Flush();
-            stream.Position = 0;
-            return stream;
         }
     }
 }

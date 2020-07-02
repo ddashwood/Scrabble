@@ -18,11 +18,9 @@ namespace ScrabbleGameTests
                 new TilePlacement(1, 2, 'B')
             });
 
-            var e = Assert.Throws<InvalidOperationException>(() => move.FindWords());
-            Assert.Equal("Move validity has not been checked", e.Message);
             Assert.False(move.IsValidMove(out string _));
-            e = Assert.Throws<InvalidOperationException>(() => move.FindWords());
-            Assert.Equal("Not a valid move", e.Message);
+            var e = Assert.Throws<InvalidOperationException>(() => move.FindWords());
+            Assert.Equal("Invalid tile placement", e.Message);
         }
 
         [Fact]

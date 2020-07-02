@@ -1,6 +1,9 @@
 ﻿using ScrabbleGame;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.IO;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -102,6 +105,57 @@ namespace ScrabbleGameTests
                          + 10; // ATEST with double word under the A
 
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void BlankTileScoreTest()
+        {
+            Game game = GetGameWithSingleVerticalWord();
+            Move move = new Move(game, new List<TilePlacement>
+            {
+                new TilePlacement(1, 1, 'F'),
+                new TilePlacement(1, 2, 'L'),
+                new TilePlacement(1, 3, 'a'),
+                new TilePlacement(1, 4, 'P'),
+                new TilePlacement(1, 5, 'S')
+            });
+
+            int actual = move.GetScore(out string _);
+            int expected = 22 // FLaPS with double word under the F, tripple letter under the S
+                         + 1  // AT
+                         + 4  // PE
+                         + 4; // SS with tripple letter under the first S
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void FindInvalidWordsTest()
+        {
+            string words = $"FLAPS{Environment.NewLine}" +
+                $"AT{Environment.NewLine}" +
+                $"TEST";
+            using (Stream wordsStream = GenerateStreamFromString(words))
+            {
+                var wordChecker = new FileWordChecker(wordsStream);
+
+                Game game = GetGameWithSingleVerticalWord(wordChecker);
+                Move move = new Move(game, new List<TilePlacement>
+                {
+                    new TilePlacement(1, 1, 'F'),
+                    new TilePlacement(1, 2, 'L'),
+                    new TilePlacement(1, 3, 'a'),
+                    new TilePlacement(1, 4, 'P'),
+                    new TilePlacement(1, 5, 'S')
+                });
+
+                var actual = move.InvalidWords().ToList();
+                var expected = new List<string> { "PE", "SS" };
+
+                actual.Sort();
+                expected.Sort();
+                Assert.Equal(expected, actual);
+            }
         }
     }
 }

@@ -16,9 +16,6 @@ namespace ScrabbleGame
         // Set to null when the tiles do not form a straight line
         private IMoveDirectionStrategy directionStrategy;
 
-        // Set by IsValidMove(), which is called explicitly when needed
-        private bool? isValidMove = null;
-
         public Move(Game game)
         {
             this.game = game;
@@ -54,9 +51,18 @@ namespace ScrabbleGame
             return words.Sum(w => w.Score);
         }
 
+        public void Play()
+        {
+            if (!IsValidMove(out string error)) throw new InvalidOperationException(error);
+
+            foreach (var placement in placements)
+            {
+                game[placement.X, placement.Y] = placement.Tile;
+            }
+        }
+
         internal bool IsValidMove(out string error)
         {
-            isValidMove = false;
             if (placements.Count == 0)
             {
                 error = "No tile placements supplied";
@@ -74,8 +80,20 @@ namespace ScrabbleGame
             }
             error = string.Empty;
 
-            isValidMove = true;
             return true;
+        }
+
+        internal IEnumerable<string> InvalidWords()
+        {
+            var words = FindWords();
+            foreach (var word in words)
+            {
+                var wordText = word.ToString();
+                if (!game.CheckWord(wordText))
+                {
+                    yield return wordText;
+                }
+            }
         }
 
         private bool IsUsingCentreSquare() =>
@@ -84,9 +102,7 @@ namespace ScrabbleGame
 
         private void SetDirectionStrategy()
         {
-            // This method should only be called when placements have changed
-            // Therefore, we can't know if it's valid until we explicitly check its validity
-            isValidMove = null;
+            // This method should be called when placements have changed
             directionStrategy = null;
 
             if (placements.Count == 1)
@@ -193,8 +209,7 @@ namespace ScrabbleGame
 
         internal List<PlayedWord> FindWords()
         {
-            if (isValidMove == null) throw new InvalidOperationException("Move validity has not been checked");
-            if (isValidMove == false) throw new InvalidOperationException("Not a valid move");
+            if (!IsValidMove(out string error)) throw new InvalidOperationException(error);
 
             List<PlayedWord> results = new List<PlayedWord>();
 

@@ -58,10 +58,12 @@ namespace ScrabbleGame
         public const int BOARD_HEIGHT = 15;
 
         private readonly GameData gameData;
+        private readonly IWordChecker wordChecker;
 
-        public Game(GameData gameData)
+        public Game(GameData gameData, IWordChecker wordChecker = null)
         {
             this.gameData = gameData ?? throw new ArgumentNullException(nameof(gameData));
+            this.wordChecker = wordChecker;
         }
 
         internal static int LetterScore(char tile)
@@ -79,6 +81,13 @@ namespace ScrabbleGame
                 return result;
             }
             return Multiplier.None;
+        }
+
+        internal bool CheckWord(string word)
+        {
+            if (wordChecker == null) throw new InvalidOperationException("No word checker has been set");
+
+            return wordChecker.IsWord(word);
         }
 
         public char this[int x, int y]
