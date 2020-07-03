@@ -1,0 +1,14 @@
+﻿<div class="message">
+    <h3>
+        Your game with @OpponentName
+    </h3>
+    <p class="@($"text-{BootstrapContext}")">
+        @ChildContent
+    </p>
+</div>
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public string OpponentName { get; set; }
+    [Parameter] public string BootstrapContext { get; set; }
+}

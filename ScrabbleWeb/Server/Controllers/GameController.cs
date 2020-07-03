@@ -32,7 +32,8 @@ namespace ScrabbleWeb.Server.Controllers
             return new GameDto
             {
                 Board = board,
-                PlayerTiles = "BLE A-K"
+                PlayerTiles = "BLE A-K",
+                OtherPlayerName = "Test Player"
             };
         }
     }

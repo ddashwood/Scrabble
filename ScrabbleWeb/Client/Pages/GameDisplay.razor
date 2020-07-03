@@ -1,11 +1,9 @@
 ﻿@page "/game/{gameId:int}"
 @using ScrabbleMoveChecker
 @using ScrabbleWeb.Shared
+@using ScrabbleWeb.Client.Game
+@using ScrabbleWeb.Client.Components
 @inject HttpClientNoAuth Http
-
-<h3>Game</h3>
-
-<p>Showing game number @GameId</p>
 
 @if (game == null)
 {
@@ -13,6 +11,10 @@
 }
 else
 {
+    <GameMessage BootstrapContext="@messageContext" OpponentName="@gameData.OtherPlayerName">
+        @message
+    </GameMessage>
+
     <div class="game">
         <div class="game-element-container">
             <div class="board">
@@ -22,13 +24,25 @@ else
                         @for (int x = 0; x < GameBase.BOARD_WIDTH; x++)
                         {
                             char tile = game[x, y];
+                            char userTile = ' ';
                             var multiplier = GameBase.SquareMultiplier(x, y);
                             string multiplierClass = "";
                             string char1 = "";
                             string char2 = "";
+                            bool boardSpaceEmpty = false;
+                            int boardX = x;
+                            int boardY = y;
 
-                            if (tile == ' ') // Multipliers only affect tiles that aren't played on yet
+                            if (tile == ' ')
                             {
+                                userTile = move[x, y];
+                            }
+
+                            if (tile == ' ' && userTile == ' ')
+                            {
+                                boardSpaceEmpty = true;
+
+                                // Multipliers only affect tiles that aren't played on yet
                                 switch (multiplier)
                                 {
                                     case Multiplier.DoubleLetter:
@@ -45,34 +59,49 @@ else
                                         break;
                                 }
                             }
-                            <div class="tile-space @multiplierClass">
-                                @{
-                                    if (tile != ' ')
+
+                            // @ondragover:preventDefault="boardSpaceEmpty" doesn't seem to work
+                        <div class="tile-space @multiplierClass"
+                             ondragover="@(boardSpaceEmpty ? "event.preventDefault()" : "")"
+                             @ondrop="e => DropOnBoard(e, boardX, boardY)">
+                            @if (tile != ' ')
+                            {
+                                <div class="tile-container">
+                                    <div class="tile-content">@tile.ToString().ToUpper()</div>
+                                    @*Non-capital means a blank tile, so no score*@
+                                    @if (tile >= 'A' && tile <= 'Z')
                                     {
-                                        <div class="tile-container">
-                                            <div class="tile-content">@tile.ToString().ToUpper()</div>
-                                            @*Non-capital means a blank tile, so no score*@
-                                            @if (tile >= 'A' && tile <= 'Z')
-                                            {
-                                                <div class="tile-content-score">@GameBase.LetterScore(tile)</div>
-                                            }
-                                        </div>
+                                        <div class="tile-content-score">@GameBase.LetterScore(tile)</div>
                                     }
-                                    else if (!string.IsNullOrEmpty(multiplierClass))
+                                </div>
+                            }
+                            else if (userTile != ' ')
+                            {
+                                string containerClass = isValidMove ? "tile-valid" : "tile-invalid";
+                                <div class=@($"tile-container draggable {containerClass}") draggable="true" @ondragstart="e => Drag(e, new DragSpaceOnBoard(boardX, boardY))">
+                                    <div class="tile-content">@userTile.ToString().ToUpper()</div>
+                                    @*Non-capital means a blank tile, so no score*@
+                                    @if (userTile >= 'A' && userTile <= 'Z')
                                     {
-                                        <div class="tile-container">
-                                            <div class="tile-container-multiplier1">@char1</div>
-                                            <div class="tile-container-multiplier2">@char2</div>
-                                        </div>
+                                        <div class="tile-content-score">@GameBase.LetterScore(userTile)</div>
                                     }
-                                    else if (x == (GameBase.BOARD_WIDTH - 1) / 2 && y == (GameBase.BOARD_HEIGHT - 1) / 2)
-                                    {
-                                        <div class="tile-container tile-container-centre">
-                                            <div class="tile-content"><span class="oi oi-star" aria-hidden="true"></span></div>
-                                        </div>
-                                    }
-                                }
-                            </div>
+                                </div>
+                            }
+                            else if (!string.IsNullOrEmpty(multiplierClass))
+                            {
+                                <div class="tile-container">
+                                    <div class="tile-container-multiplier1">@char1</div>
+                                    <div class="tile-container-multiplier2">@char2</div>
+                                </div>
+                            }
+                            else if (x == (GameBase.BOARD_WIDTH - 1) / 2 && y == (GameBase.BOARD_HEIGHT - 1) / 2)
+                            {
+                                <div class="tile-container tile-container-centre">
+                                    <div class="tile-content"><span class="oi oi-star" aria-hidden="true"></span></div>
+                                </div>
+                            }
+
+                        </div>
                         }
                     </div>
                 }
@@ -82,12 +111,15 @@ else
         <div class="game-element-container">
             <div class="player-tiles">
                 <div class="tile-row">
-                    @foreach (char tile in gameData.PlayerTiles)
+                    @for (int i = 0; i < gameData.PlayerTiles.Length; i++)
                     {
-                        <div class="tile-space">
-                            @if (tile != '-')
+                        int space = i;
+                        char tile = gameData.PlayerTiles[space];
+                        bool userSpaceEmpty = tile == '-';
+                        <div class="tile-space" ondragover="@(userSpaceEmpty ? "event.preventDefault()" : "")" @ondrop="e => DropOffBoard(e, space)">
+                            @if (!userSpaceEmpty)
                             {
-                                <div class="tile-container">
+                                <div class="tile-container draggable" draggable="true" @ondragstart="e => Drag(e, new DragSpaceOffBoard(space))">
                                     <div class="tile-content">@tile.ToString().ToUpper()</div>
                                     @if (tile >= 'A' && tile <= 'Z')
                                     {
@@ -107,11 +139,82 @@ else
     [Parameter] public int GameId { get; set; }
     GameBase game;
     GameDto gameData;
+    MoveBase move;
+    IDragSpace tileBeingDragged;
+    string message;
+    string messageContext;
+    bool isValidMove;
 
     protected override async Task OnParametersSetAsync()
     {
         var data = await Http.GetFromJsonAsync<GameDto>($"/api/game/{GameId}");
         game = new GameBase(data.Board);
         gameData = data;
+        move = new MoveBase(game);
+    }
+
+    private void Drag(DragEventArgs e, IDragSpace tile)
+    {
+        tileBeingDragged = tile;
+    }
+
+    private void DropOffBoard(DragEventArgs e, int newPosition)
+    {
+        char[] tiles = gameData.PlayerTiles.ToCharArray();
+
+        switch (tileBeingDragged)
+        {
+            case DragSpaceOffBoard space:
+                // Moving tiles around in the rack
+                (tiles[newPosition], tiles[space.Space]) = (tiles[space.Space], tiles[newPosition]);
+                gameData.PlayerTiles = new string(tiles);
+                break;
+            case DragSpaceOnBoard space:
+                // Removing a tile from the board
+                tiles[newPosition] = move[space.X, space.Y];
+                gameData.PlayerTiles = new string(tiles);
+                move.RemovePlacementAtPosition(space.X, space.Y);
+                UpdateMessage();
+                break;
+        }
+    }
+
+    private void DropOnBoard(DragEventArgs e, int newX, int newY)
+    {
+        switch (tileBeingDragged)
+        {
+            case DragSpaceOffBoard space:
+                // Placing a tile on the board
+                char[] tiles = gameData.PlayerTiles.ToCharArray();
+
+                move.AddPlacement(new TilePlacement(newX, newY, tiles[space.Space]));
+                tiles[space.Space] = '-';
+                gameData.PlayerTiles = new string(tiles);
+                UpdateMessage();
+                break;
+
+            case DragSpaceOnBoard space:
+                // Moving a tile around on the board
+                move.AddPlacement(new TilePlacement(newX, newY, move[space.X, space.Y]));
+                move.RemovePlacementAtPosition(space.X, space.Y);
+                UpdateMessage();
+                break;
+        }
+    }
+
+    private void UpdateMessage()
+    {
+        int score = move.GetScore(out string error);
+        isValidMove = string.IsNullOrEmpty(error);
+        if (isValidMove)
+        {
+            message = "Score: " + score;
+            messageContext = "primary";
+        }
+        else
+        {
+            message = error;
+            messageContext = "danger";
+        }
     }
 }

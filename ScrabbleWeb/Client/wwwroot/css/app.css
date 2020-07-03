@@ -281,6 +281,32 @@ app {
 }
 
 .game .game-element-container div {
-    display:inline-block;
+    display: inline-block;
 }
 
+.draggable {
+    cursor: grab;
+}
+
+.message {
+    height: 7em;
+    border: 2px solid black;
+    margin: 2rem 20%;
+    display: block;
+}
+
+.message p, .message h3 {
+    text-align: center;
+}
+
+.message h3 {
+    margin-top: 1.5rem;
+}
+
+.tile-container.tile-valid{
+    color: dodgerblue
+}
+
+.tile-container.tile-invalid {
+    color: red;
+}

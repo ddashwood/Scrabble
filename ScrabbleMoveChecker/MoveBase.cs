@@ -39,6 +39,14 @@ namespace ScrabbleMoveChecker
             SetDirectionStrategy();
         }
 
+        public char this[int x, int y]
+        {
+            get
+            {
+                return placements.SingleOrDefault(p => p.X == x && p.Y == y)?.Tile ?? ' ';
+            }
+        }
+
         public int GetScore(out string error)
         {
             if (!IsValidMove(out error))
@@ -54,7 +62,7 @@ namespace ScrabbleMoveChecker
         {
             if (placements.Count == 0)
             {
-                error = "No tile placements supplied";
+                error = "Please play some tiles";
                 return false;
             }
             if (!InAValidLine() || (!TouchesExistingTile() && !game.IsFirstMove()))
@@ -81,6 +89,11 @@ namespace ScrabbleMoveChecker
         {
             // This method should be called when placements have changed
             directionStrategy = null;
+
+            if (placements.Count == 0)
+            {
+                return;
+            }
 
             if (placements.Count == 1)
             {
