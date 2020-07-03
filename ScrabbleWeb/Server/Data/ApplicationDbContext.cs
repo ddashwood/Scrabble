@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ScrabbleData;
 using Microsoft.AspNetCore.Identity;
 using IdentityServer4.Models;
+using ScrabbleGame;
 
 namespace ScrabbleWeb.Server.Data
 {
@@ -52,6 +53,8 @@ namespace ScrabbleWeb.Server.Data
                     .WithMany(p => p.GamesAsPlayer2)
                     .HasForeignKey("Player2Id")
                     .HasPrincipalKey("Id");
+
+                entity.HasCheckConstraint("CK_BOARD_LENGTH", $"LENGTH(Board)={Game.BOARD_WIDTH * Game.BOARD_HEIGHT}");
             });
         }
     }

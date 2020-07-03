@@ -273,6 +273,8 @@ namespace ScrabbleWeb.Server.Migrations
                     b.HasIndex("Player2Id");
 
                     b.ToTable("Game");
+
+                    b.HasCheckConstraint("CK_BOARD_LENGTH", "LENGTH(Board)=225");
                 });
 
             modelBuilder.Entity("ScrabbleData.Player", b =>

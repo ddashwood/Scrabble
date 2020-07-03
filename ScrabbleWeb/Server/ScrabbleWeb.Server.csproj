@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ScrabbleData\ScrabbleData.csproj" />
+    <ProjectReference Include="..\..\ScrabbleGame\ScrabbleGame.csproj" />
     <ProjectReference Include="..\Client\ScrabbleWeb.Client.csproj" />
     <ProjectReference Include="..\Shared\ScrabbleWeb.Shared.csproj" />
   </ItemGroup>

@@ -98,6 +98,7 @@ namespace ScrabbleWeb.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Game", x => x.GameId);
+                    table.CheckConstraint("CK_BOARD_LENGTH", "LENGTH(Board)=225");
                     table.ForeignKey(
                         name: "FK_Game_Player_Player1Id",
                         column: x => x.Player1Id,

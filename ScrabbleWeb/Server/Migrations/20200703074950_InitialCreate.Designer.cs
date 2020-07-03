@@ -9,7 +9,7 @@ using ScrabbleWeb.Server.Data;
 namespace ScrabbleWeb.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200702091149_InitialCreate")]
+    [Migration("20200703074950_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -275,6 +275,8 @@ namespace ScrabbleWeb.Server.Migrations
                     b.HasIndex("Player2Id");
 
                     b.ToTable("Game");
+
+                    b.HasCheckConstraint("CK_BOARD_LENGTH", "LENGTH(Board)=225");
                 });
 
             modelBuilder.Entity("ScrabbleData.Player", b =>
