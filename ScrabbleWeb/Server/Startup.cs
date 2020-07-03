@@ -13,6 +13,7 @@ using Microsoft.Extensions.Hosting;
 using System.Linq;
 using ScrabbleWeb.Server.Data;
 using ScrabbleWeb.Server.Models;
+using ScrabbleGame;
 
 namespace ScrabbleWeb.Server
 {
@@ -29,6 +30,8 @@ namespace ScrabbleWeb.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IWordCheckerFactory, WordCheckerFactory>();
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));

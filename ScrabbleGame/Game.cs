@@ -22,18 +22,18 @@ namespace ScrabbleGame
         public int Player1Score { get; private set; }
         public int Player2Score { get; private set; }
 
-        public Game()
+        public Game(IWordChecker wordChecker = null)
             : base(new string(' ', BOARD_WIDTH * BOARD_HEIGHT))
         {
             Player1Tiles = "BLE A-K";
-            this.wordChecker = new FileWordChecker();
+            this.wordChecker = wordChecker;
         }
 
         public Game(GameData gameData, IWordChecker wordChecker = null)
             : base(gameData.Board)
         {
             if (gameData == null) throw new ArgumentNullException(nameof(gameData));
-            this.wordChecker = wordChecker ?? new FileWordChecker();
+            this.wordChecker = wordChecker;
 
             GameId = gameData.GameId;
             Player1Id = gameData.Player1Id;

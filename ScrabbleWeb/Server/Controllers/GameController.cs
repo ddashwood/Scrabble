@@ -18,12 +18,15 @@ namespace ScrabbleWeb.Server.Controllers
     public class GameController : ControllerBase
     {
         private readonly ApplicationDbContext context;
-        public GameController(ApplicationDbContext context)
+        private readonly IWordCheckerFactory wordCheckerFactory;
+        public GameController(ApplicationDbContext context, IWordCheckerFactory wordCheckerFactory)
         {
             this.context = context;
+            this.wordCheckerFactory = wordCheckerFactory;
+            game = game ?? new Game(wordCheckerFactory.GetWordChecker());
         }
 
-        static Game game = new Game();
+        static Game game;
 
         [HttpGet("{id}")]
         public GameDto Get(int id)
