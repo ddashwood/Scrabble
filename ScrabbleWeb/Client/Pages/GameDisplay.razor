@@ -1,6 +1,6 @@
 ﻿@page "/game/{gameId:int}"
 @using ScrabbleMoveChecker
-@using ScrabbleWeb.Shared 
+@using ScrabbleWeb.Shared
 @inject HttpClientNoAuth Http
 
 <h3>Game</h3>
@@ -13,77 +13,105 @@
 }
 else
 {
-    <div class="board">
-        @for (int y = 0; y < GameBase.BOARD_HEIGHT; y++)
-        {
-            <div class="board-row">
-                @for (int x = 0; x < GameBase.BOARD_WIDTH; x++)
+    <div class="game">
+        <div class="game-element-container">
+            <div class="board">
+                @for (int y = 0; y < GameBase.BOARD_HEIGHT; y++)
                 {
-                    char tile = game[x, y];
-                    var multiplier = GameBase.SquareMultiplier(x, y);
-                    string multiplierClass = "";
-                    string char1 = "";
-                    string char2 = "";
-
-                    if (tile == ' ') // Multipliers only affect tiles that aren't played on yet
-                    {
-                        switch (multiplier)
+                    <div class="tile-row">
+                        @for (int x = 0; x < GameBase.BOARD_WIDTH; x++)
                         {
-                            case Multiplier.DoubleLetter:
-                                (multiplierClass, char1, char2) = ("double-letter", "D", "L");
-                                break;
-                            case Multiplier.TrippleLetter:
-                                (multiplierClass, char1, char2) = ("tripple-letter", "T", "L");
-                                break;
-                            case Multiplier.DoubleWord:
-                                (multiplierClass, char1, char2) = ("double-word", "D", "W");
-                                break;
-                            case Multiplier.TrippleWord:
-                                (multiplierClass, char1, char2) = ("tripple-word", "T", "W");
-                                break;
-                        }
-                    }
-                    <div class="board-square @multiplierClass">
-                        @{
-                            if (tile != ' ')
+                            char tile = game[x, y];
+                            var multiplier = GameBase.SquareMultiplier(x, y);
+                            string multiplierClass = "";
+                            string char1 = "";
+                            string char2 = "";
+
+                            if (tile == ' ') // Multipliers only affect tiles that aren't played on yet
                             {
-                                <div class="board-content-container">
-                                    <div class="board-content">@tile.ToString().ToUpper()</div>
-                                    @*Non-capital means a blank tile, so no score*@
-                                    @if (tile >= 'A' && tile <= 'Z')
+                                switch (multiplier)
+                                {
+                                    case Multiplier.DoubleLetter:
+                                        (multiplierClass, char1, char2) = ("double-letter", "D", "L");
+                                        break;
+                                    case Multiplier.TrippleLetter:
+                                        (multiplierClass, char1, char2) = ("tripple-letter", "T", "L");
+                                        break;
+                                    case Multiplier.DoubleWord:
+                                        (multiplierClass, char1, char2) = ("double-word", "D", "W");
+                                        break;
+                                    case Multiplier.TrippleWord:
+                                        (multiplierClass, char1, char2) = ("tripple-word", "T", "W");
+                                        break;
+                                }
+                            }
+                            <div class="tile-space @multiplierClass">
+                                @{
+                                    if (tile != ' ')
                                     {
-                                        <div class="board-content-score">@GameBase.LetterScore(tile)</div>
+                                        <div class="tile-container">
+                                            <div class="tile-content">@tile.ToString().ToUpper()</div>
+                                            @*Non-capital means a blank tile, so no score*@
+                                            @if (tile >= 'A' && tile <= 'Z')
+                                            {
+                                                <div class="tile-content-score">@GameBase.LetterScore(tile)</div>
+                                            }
+                                        </div>
                                     }
-                                </div>
-                            }
-                            else if (!string.IsNullOrEmpty(multiplierClass))
-                            {
-                                <div class="board-content-container">
-                                    <div class="board-content-multiplier1">@char1</div>
-                                    <div class="board-content-multiplier2">@char2</div>
-                                </div>
-                            }
-                            else if (x == (GameBase.BOARD_WIDTH - 1) / 2 && y == (GameBase.BOARD_HEIGHT - 1) / 2)
-                            {
-                                <div class="board-content-centre">
-                                    <div class="board-content"><span class="oi oi-star" aria-hidden="true"></span></div>
-                                </div>
-                            }
+                                    else if (!string.IsNullOrEmpty(multiplierClass))
+                                    {
+                                        <div class="tile-container">
+                                            <div class="tile-container-multiplier1">@char1</div>
+                                            <div class="tile-container-multiplier2">@char2</div>
+                                        </div>
+                                    }
+                                    else if (x == (GameBase.BOARD_WIDTH - 1) / 2 && y == (GameBase.BOARD_HEIGHT - 1) / 2)
+                                    {
+                                        <div class="tile-container tile-container-centre">
+                                            <div class="tile-content"><span class="oi oi-star" aria-hidden="true"></span></div>
+                                        </div>
+                                    }
+                                }
+                            </div>
                         }
                     </div>
                 }
             </div>
-        }
+        </div>
+
+        <div class="game-element-container">
+            <div class="player-tiles">
+                <div class="tile-row">
+                    @foreach (char tile in gameData.PlayerTiles)
+                    {
+                        <div class="tile-space">
+                            @if (tile != '-')
+                            {
+                                <div class="tile-container">
+                                    <div class="tile-content">@tile.ToString().ToUpper()</div>
+                                    @if (tile >= 'A' && tile <= 'Z')
+                                    {
+                                        <div class="tile-content-score">@GameBase.LetterScore(tile)</div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
 }
 
 @code {
     [Parameter] public int GameId { get; set; }
     GameBase game;
+    GameDto gameData;
 
     protected override async Task OnParametersSetAsync()
     {
         var data = await Http.GetFromJsonAsync<GameDto>($"/api/game/{GameId}");
         game = new GameBase(data.Board);
+        gameData = data;
     }
 }

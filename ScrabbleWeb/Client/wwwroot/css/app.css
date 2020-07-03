@@ -191,11 +191,11 @@ app {
     }
 }
 
-.board-row {
-    display:flex;
+.tile-row {
+    display:flex !important;
 }
 
-.board-square {
+.tile-space {
     display:inline-flex;
     height:1.5rem;
     width:1.5rem;
@@ -207,37 +207,37 @@ app {
     overflow:hidden;
 }
 
-.board-square .board-content-container {
+.tile-space .tile-container {
     background-color: wheat;
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.4rem;
+    height: 1.4rem;
     position: relative;
     line-height: 1.5rem;
 }
 
-.board-content-centre {
+.tile-container-centre {
     width: 1.5rem;
     height: 1.5rem;
     line-height: 1.5rem;
     background-color: lightpink;
 }
 
-.double-letter .board-content-container {
+.double-letter .tile-container {
     background-color: paleturquoise;
 }
-.tripple-letter .board-content-container {
+.tripple-letter .tile-container {
     background-color: blue;
     color:white;
 }
-.double-word .board-content-container {
+.double-word .tile-container {
     background-color: lightpink;
 }
-.tripple-word .board-content-container {
+.tripple-word .tile-container {
     background-color: red;
     color:white;
 }
 
-.board-content {
+.tile-content {
     text-align: center;
     font-family: 'Open_Sans_Bold';
     font-size: small;
@@ -247,27 +247,40 @@ app {
     left: -2px;
 }
 
-.board-content-centre .board-content {
+.tile-container-centre .tile-content {
     left: 0;
 }
 
-.board-content-multiplier1, .board-content-multiplier2, .board-content-score {
+.tile-container-multiplier1, .tile-container-multiplier2, .tile-content-score {
     font-size: xx-small;
     position: absolute;
     line-height: 100%;
 }
 
-.board-content-multiplier1 {
+.tile-container-multiplier1 {
     bottom: 48%;
     right: 52%;
 }
 
-.board-content-multiplier2 {
+.tile-container-multiplier2 {
     top:48%;
     left:52%
 }
 
-.board-content-score {
+.tile-content-score {
     top:1px;
     right:1px;
 }
+
+.player-tiles {
+    margin-top: 2rem;
+}
+
+.game {
+    text-align: center
+}
+
+.game .game-element-container div {
+    display:inline-block;
+}
+

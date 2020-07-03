@@ -29,7 +29,11 @@ namespace ScrabbleWeb.Server.Controllers
                "  m            " +
                "  P            " + // and extends to position 2, 6
                string.Concat(Enumerable.Repeat("               ", 8));
-            return new GameDto { Board = board };
+            return new GameDto
+            {
+                Board = board,
+                PlayerTiles = "BLE A-K"
+            };
         }
     }
 }
