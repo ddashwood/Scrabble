@@ -30,7 +30,7 @@ namespace ScrabbleGame
             }
         }
 
-        internal IEnumerable<string> InvalidWords()
+        public IEnumerable<string> InvalidWords()
         {
             var words = FindWords();
             foreach (var word in words)

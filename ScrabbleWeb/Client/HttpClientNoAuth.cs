@@ -20,5 +20,15 @@ namespace ScrabbleWeb.Client
         {
             return await Client.GetFromJsonAsync<T>(url);
         }
+
+        public async Task<string> GetStringAsync(string url)
+        {
+            return await Client.GetStringAsync(url);
+        }
+
+        public async Task<HttpResponseMessage> PostAsJsonAsync<TValue>(string url, TValue value)
+        {
+            return await Client.PostAsJsonAsync(url, value);
+        }
     }
 }

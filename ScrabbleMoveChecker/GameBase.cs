@@ -53,11 +53,11 @@ namespace ScrabbleMoveChecker
         public const int BOARD_WIDTH = 15;
         public const int BOARD_HEIGHT = 15;
 
-        protected string board;
+        public string Board { get; protected set; }
 
         public GameBase(string board)
         {
-            this.board = board;
+            this.Board = board;
         }
 
         public static int LetterScore(char tile)
@@ -87,10 +87,10 @@ namespace ScrabbleMoveChecker
                     throw new ArgumentOutOfRangeException(nameof(y), y, null);
 
                 int index = y * BOARD_WIDTH + x;
-                return board[index];
+                return Board[index];
             }
         }
 
-        internal bool IsFirstMove() => board.All(c => c == ' ');
+        internal bool IsFirstMove() => Board.All(c => c == ' ');
     }
 }

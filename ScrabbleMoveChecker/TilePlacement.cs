@@ -14,5 +14,8 @@ namespace ScrabbleMoveChecker
         {
             (X, Y, Tile) = (x, y, tile);
         }
+
+        public TilePlacement()
+        { }
     }
 }

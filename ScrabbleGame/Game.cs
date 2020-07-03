@@ -22,13 +22,19 @@ namespace ScrabbleGame
         public int Player1Score { get; private set; }
         public int Player2Score { get; private set; }
 
+        public Game()
+            : base(new string(' ', BOARD_WIDTH * BOARD_HEIGHT))
+        {
+            Player1Tiles = "BLE A-K";
+            this.wordChecker = new FileWordChecker();
+        }
+
         public Game(GameData gameData, IWordChecker wordChecker = null)
             : base(gameData.Board)
         {
             if (gameData == null) throw new ArgumentNullException(nameof(gameData));
-            this.wordChecker = wordChecker;
+            this.wordChecker = wordChecker ?? new FileWordChecker();
 
-            board = gameData.Board;
             GameId = gameData.GameId;
             Player1Id = gameData.Player1Id;
             Player2Id = gameData.Player2Id;
@@ -62,10 +68,10 @@ namespace ScrabbleGame
                 if (y < 0 || y >= BOARD_WIDTH)
                     throw new ArgumentOutOfRangeException(nameof(y), y, null);
 
-                char[] spaces = board.ToCharArray();
+                char[] spaces = Board.ToCharArray();
                 int index = y * BOARD_WIDTH + x;
                 spaces[index] = value;
-                board = new string(spaces);
+                Board = new string(spaces);
             }
         }
     }

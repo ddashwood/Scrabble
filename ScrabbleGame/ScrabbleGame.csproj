@@ -9,10 +9,4 @@
     <ProjectReference Include="..\ScrabbleMoveChecker\ScrabbleMoveChecker.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="SOWPODS.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

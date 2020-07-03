@@ -9,6 +9,7 @@ namespace ScrabbleMoveChecker
     {
         protected readonly GameBase game;
         protected readonly List<TilePlacement> placements = new List<TilePlacement>();
+        public IEnumerable<TilePlacement> Placements => placements.AsReadOnly();
 
         // Set by SetDirectionStrategy(), which is called whenever the
         // list of placements changes, so should always be correct.

@@ -3,6 +3,7 @@
 @using ScrabbleWeb.Shared
 @using ScrabbleWeb.Client.Game
 @using ScrabbleWeb.Client.Components
+@using System.Linq 
 @inject HttpClientNoAuth Http
 
 @if (game == null)
@@ -132,6 +133,9 @@ else
                 </div>
             </div>
         </div>
+        <div class="buttons">
+            <button @onclick=Play>Play</button>
+        </div>
     </div>
 }
 
@@ -146,6 +150,11 @@ else
     bool isValidMove;
 
     protected override async Task OnParametersSetAsync()
+    {
+        await LoadGame();
+    }
+
+    private async Task LoadGame()
     {
         var data = await Http.GetFromJsonAsync<GameDto>($"/api/game/{GameId}");
         game = new GameBase(data.Board);
@@ -216,5 +225,26 @@ else
             message = error;
             messageContext = "danger";
         }
+    }
+
+    private async Task Play()
+    {
+        var response = await Http.PostAsJsonAsync("/api/game", move.Placements);
+        if (response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
+        {
+            var badWords = (await response.Content.ReadFromJsonAsync<IEnumerable<string>>()).ToList();
+            message = "The following words are not allowed: " + string.Join(", ", badWords);
+            messageContext = "danger";
+            return;
+        }
+        else if (response.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            message = "Something went wrong";
+            messageContext = "danger";
+            return;
+        }
+
+        // Success - reload the board (including new tiles)
+        await LoadGame();
     }
 }
