@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ScrabbleData;
 using ScrabbleWeb.Server.Data;
+using ScrabbleWeb.Shared;
 
 namespace ScrabbleWeb.Server.Controllers
 {
@@ -20,7 +21,7 @@ namespace ScrabbleWeb.Server.Controllers
         }
 
         [HttpGet("{id}")]
-        public GameData Get(int id)
+        public GameDto Get(int id)
         {
             string board = string.Concat(Enumerable.Repeat("               ", 3)) +
                "  T            " + // TEST starts at position 2, 3
@@ -28,7 +29,7 @@ namespace ScrabbleWeb.Server.Controllers
                "  m            " +
                "  P            " + // and extends to position 2, 6
                string.Concat(Enumerable.Repeat("               ", 8));
-            return new GameData { Board = board };
+            return new GameDto { Board = board };
         }
     }
 }

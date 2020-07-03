@@ -16,7 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ScrabbleGame\ScrabbleGame.csproj" />
+    <ProjectReference Include="..\..\ScrabbleMoveChecker\ScrabbleMoveChecker.csproj" />
+    <ProjectReference Include="..\Shared\ScrabbleWeb.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

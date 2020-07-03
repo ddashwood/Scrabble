@@ -16,9 +16,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrabbleWeb.Server", "ScrabbleWeb\Server\ScrabbleWeb.Server.csproj", "{96DB9595-8F09-49D6-95A7-A7C047BD485F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrabbleWeb.Server", "ScrabbleWeb\Server\ScrabbleWeb.Server.csproj", "{96DB9595-8F09-49D6-95A7-A7C047BD485F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrabbleWeb.Client", "ScrabbleWeb\Client\ScrabbleWeb.Client.csproj", "{9F21C0A5-257F-4491-BB8A-208606A98D19}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrabbleWeb.Client", "ScrabbleWeb\Client\ScrabbleWeb.Client.csproj", "{9F21C0A5-257F-4491-BB8A-208606A98D19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrabbleMoveChecker", "ScrabbleMoveChecker\ScrabbleMoveChecker.csproj", "{F1A239A7-A831-4829-9B3E-38992BC57004}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrabbleWeb.Shared", "ScrabbleWeb\Shared\ScrabbleWeb.Shared.csproj", "{06B57C3B-9429-4BAF-A79D-98A35ED9D9D9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,6 +50,14 @@ Global
 		{9F21C0A5-257F-4491-BB8A-208606A98D19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F21C0A5-257F-4491-BB8A-208606A98D19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F21C0A5-257F-4491-BB8A-208606A98D19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1A239A7-A831-4829-9B3E-38992BC57004}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1A239A7-A831-4829-9B3E-38992BC57004}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1A239A7-A831-4829-9B3E-38992BC57004}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1A239A7-A831-4829-9B3E-38992BC57004}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06B57C3B-9429-4BAF-A79D-98A35ED9D9D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06B57C3B-9429-4BAF-A79D-98A35ED9D9D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06B57C3B-9429-4BAF-A79D-98A35ED9D9D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06B57C3B-9429-4BAF-A79D-98A35ED9D9D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

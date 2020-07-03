@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ScrabbleData\ScrabbleData.csproj" />
+    <ProjectReference Include="..\ScrabbleMoveChecker\ScrabbleMoveChecker.csproj" />
   </ItemGroup>
 
   <ItemGroup>

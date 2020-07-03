@@ -1,6 +1,6 @@
-﻿namespace ScrabbleGame
+﻿namespace ScrabbleMoveChecker
 {
-    internal class PlayedWordLetter
+    public  class PlayedWordLetter
     {
         public char Tile { get; }
         public Multiplier Multiplier { get; private set; }
@@ -18,7 +18,7 @@
 
         public static PlayedWordLetter CreateWithBoardMultiplier(char tile, int x, int y)
         {
-            return new PlayedWordLetter(tile) { Multiplier = Game.SquareMultiplier(x, y) };
+            return new PlayedWordLetter(tile) { Multiplier = GameBase.SquareMultiplier(x, y) };
         }
     }
 }

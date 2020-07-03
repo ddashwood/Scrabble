@@ -3,42 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ScrabbleGame
+namespace ScrabbleMoveChecker
 {
-    class MoveDirectionStrategyHorizontal : IMoveDirectionStrategy
+    class MoveDirectionStrategyVertical : IMoveDirectionStrategy
     {
-        private int minX;
-        private int maxX;
-        private int y;
+        private int x;
+        private int minY;
+        private int maxY;
 
-        public MoveDirectionStrategyHorizontal(int minX, int maxX, int y)
+        public MoveDirectionStrategyVertical(int x, int minY, int maxY)
         {
-            this.minX = minX;
-            this.maxX = maxX;
-            this.y = y;
+            this.x = x;
+            this.minY = minY;
+            this.maxY = maxY;
         }
 
         public bool TryAdjustMinMax(TilePlacement placement)
         {
-            if (placement.Y != y)
+            if (placement.X != x)
             {
                 return false;
             }
 
-            if (placement.X < minX) minX = placement.X;
-            if (placement.X > maxX) maxX = placement.X;
+            if (placement.Y < minY) minY = placement.Y;
+            if (placement.Y > maxY) maxY = placement.Y;
             return true;
         }
 
         public HashSet<(int x, int y)> GetAllSpacesInMainWord()
         {
-            var spaces = Enumerable.Range(minX, maxX - minX + 1).Select(x => (x, y));
+            var spaces = Enumerable.Range(minY, maxY - minY + 1).Select(y => (x, y));
             return new HashSet<(int x, int y)>(spaces);
         }
 
         public IEnumerable<PlayedWordLetter> WordTiles(Func<int, int, char> userTileGetter, Func<int, int, char> boardTileGetter)
         {
-            for (int x = minX; x <= maxX; x++)
+            for (int y = minY; y <= maxY; y++)
             {
                 char tile = boardTileGetter(x, y);
                 if (tile == ' ')
@@ -57,37 +57,36 @@ namespace ScrabbleGame
 
         public IEnumerable<PlayedWordLetter> BeforeWordTiles(Func<int, int, char> boardTileGetter)
         {
-            int x = minX - 1;
-            bool atEdge = x < 0;
+            int y = minY - 1;
+            bool atEdge = y < 0;
             char nextChar;
 
             while (!atEdge && (nextChar = boardTileGetter(x, y)) != ' ')
             {
                 // Don't include multipliers on letters before/after what the user played
                 yield return PlayedWordLetter.Create(nextChar);
-                x--;
-                atEdge = x < 0;
+                y--;
+                atEdge = y < 0;
             }
         }
 
         public IEnumerable<PlayedWordLetter> AfterWordTiles(Func<int, int, char> boardTileGetter)
         {
-            int x = maxX + 1;
-            bool atEdge = x >= Game.BOARD_WIDTH;
+            int y = maxY + 1;
+            bool atEdge = y >= GameBase.BOARD_WIDTH;
             char nextChar;
 
             while (!atEdge && (nextChar = boardTileGetter(x, y)) != ' ')
             {
                 // Don't include multipliers on letters before/after what the user played
                 yield return PlayedWordLetter.Create(nextChar);
-                x++;
-                atEdge = x >= Game.BOARD_WIDTH;
+                y++;
+                atEdge = y >= GameBase.BOARD_WIDTH;
             }
         }
-
         public IMoveDirectionStrategy GetOppositeStrategy(TilePlacement placement)
         {
-            return new MoveDirectionStrategyVertical(placement.X, placement.Y, placement.Y);
+            return new MoveDirectionStrategyHorizontal(placement.X, placement.X, placement.Y);
         }
     }
 }

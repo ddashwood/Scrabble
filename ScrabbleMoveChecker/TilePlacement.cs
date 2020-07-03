@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ScrabbleGame
+namespace ScrabbleMoveChecker
 {
     public class TilePlacement
     {

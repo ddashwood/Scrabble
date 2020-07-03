@@ -1,6 +1,6 @@
 ﻿@page "/game/{gameId:int}"
-@using ScrabbleGame
-@using ScrabbleData
+@using ScrabbleMoveChecker
+@using ScrabbleWeb.Shared 
 @inject HttpClientNoAuth Http
 
 <h3>Game</h3>
@@ -14,13 +14,13 @@
 else
 {
     <div class="board">
-        @for (int y = 0; y < Game.BOARD_HEIGHT; y++)
+        @for (int y = 0; y < GameBase.BOARD_HEIGHT; y++)
         {
             <div class="board-row">
-                @for (int x = 0; x < Game.BOARD_WIDTH; x++)
+                @for (int x = 0; x < GameBase.BOARD_WIDTH; x++)
                 {
                     char tile = game[x, y];
-                    var multiplier = Game.SquareMultiplier(x, y);
+                    var multiplier = GameBase.SquareMultiplier(x, y);
                     string multiplierClass = "";
                     string char1 = "";
                     string char2 = "";
@@ -52,7 +52,7 @@ else
                                     @*Non-capital means a blank tile, so no score*@
                                     @if (tile >= 'A' && tile <= 'Z')
                                     {
-                                        <div class="board-content-score">@Game.LetterScore(tile)</div>
+                                        <div class="board-content-score">@GameBase.LetterScore(tile)</div>
                                     }
                                 </div>
                             }
@@ -63,7 +63,7 @@ else
                                     <div class="board-content-multiplier2">@char2</div>
                                 </div>
                             }
-                            else if (x == (Game.BOARD_WIDTH - 1) / 2 && y == (Game.BOARD_HEIGHT - 1) / 2)
+                            else if (x == (GameBase.BOARD_WIDTH - 1) / 2 && y == (GameBase.BOARD_HEIGHT - 1) / 2)
                             {
                                 <div class="board-content-centre">
                                     <div class="board-content"><span class="oi oi-star" aria-hidden="true"></span></div>
@@ -79,11 +79,11 @@ else
 
 @code {
     [Parameter] public int GameId { get; set; }
-    Game game;
+    GameBase game;
 
     protected override async Task OnParametersSetAsync()
     {
-        var data = await Http.GetFromJsonAsync<GameData>($"/api/game/{GameId}");
-        game = new Game(data);
+        var data = await Http.GetFromJsonAsync<GameDto>($"/api/game/{GameId}");
+        game = new GameBase(data.Board);
     }
 }

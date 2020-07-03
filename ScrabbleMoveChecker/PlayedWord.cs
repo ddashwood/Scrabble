@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ScrabbleGame
+namespace ScrabbleMoveChecker
 {
-    class PlayedWord
+    public class PlayedWord
     {
         List<PlayedWordLetter> playedWordLetters;
 
@@ -34,7 +34,7 @@ namespace ScrabbleGame
 
                 foreach (var letter in playedWordLetters)
                 {
-                    int letterScore = Game.LetterScore(letter.Tile);
+                    int letterScore = GameBase.LetterScore(letter.Tile);
                     if (letter.Multiplier == Multiplier.DoubleLetter)
                     {
                         letterScore *= 2;

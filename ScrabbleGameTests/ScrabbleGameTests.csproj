@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ScrabbleGame\ScrabbleGame.csproj" />
+    <ProjectReference Include="..\ScrabbleMoveChecker\ScrabbleMoveChecker.csproj" />
   </ItemGroup>
 
 </Project>
