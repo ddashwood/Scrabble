@@ -5,6 +5,7 @@
 @using ScrabbleWeb.Client.Components
 @using System.Linq
 @inject HttpClientNoAuth Http
+@inject IModalService Modal
 
 @if (game == null)
 {
@@ -62,7 +63,7 @@ else
                             }
 
                             <div class=@($"tile-space {multiplierClass}{(thisSelected ? " tile-selected": "")}")
-                                 @onclick="e => (boardSpaceEmpty ? 
+                                 @onclick="e => (boardSpaceEmpty ?
                                                         EndMove(position) :
                                                  userTile != ' ' ?
                                                         StartMove(position) :
@@ -110,7 +111,7 @@ else
                 }
             </div>
         </div>
-        
+
         <div class="game-element-container">
             <div class="player-tiles">
                 <div class="tile-row">
@@ -204,7 +205,7 @@ else
         messageContext = "success";
     }
 
-    private Task StartMove(ITilePosition position)
+    private async Task StartMove(ITilePosition position)
     {
         if (tileBeingMoved == null)
         {
@@ -216,13 +217,24 @@ else
             // If user clicks on the thing already moving, cancel the move
             if (tileBeingMoved.Equals(position))
             {
-                tileBeingMoved = null;
+                // Unless it's a blank tile. The user may "move" a blank tile to
+                // the same square to change its letter
+                if (tileBeingMoved.GetTile() < 'A' || tileBeingMoved.GetTile() > 'Z')
+                {
+                    tileBeingMoved.RemoveTile();
+                    await tileBeingMoved.AddTile('*');
+                    if (tileBeingMoved.GetTile() == '#')
+                    {
+                        // The user did not choose a letter
+                        RemoveBlankToRack(tileBeingMoved);
+                    }
+                }
 
+                tileBeingMoved = null;
             }
         }
 
         StateHasChanged();
-        return Task.CompletedTask;
     }
 
     private async Task EndMove(ITilePosition position)
@@ -236,13 +248,33 @@ else
         await position.AddTile(tileBeingMoved.GetTile());
         tileBeingMoved.RemoveTile();
 
+        if (position.GetTile() == '#')
+        {
+            // The user placed a blank tile, but then did not choose a letter
+            RemoveBlankToRack(position);
+        }
+
         tileBeingMoved = null;
         UpdateMessage();
         StateHasChanged();
     }
 
-    private Task<char> GetBlankTileLetter()
+    private void RemoveBlankToRack(ITilePosition position)
     {
-        return Task.FromResult('a');
+        position.RemoveTile();
+        game.PlayerTiles[Array.IndexOf(game.PlayerTiles, ' ')] = '*';
+    }
+
+    private async Task<char> GetBlankTileLetter()
+    {
+        var result = await Modal.Show<BlankLetterSelector>("Select a Letter").Result;
+        if (result.Cancelled)
+        {
+            return '#';
+        }
+        else
+        {
+            return (char)result.Data;
+        }
     }
 }

@@ -285,7 +285,7 @@ app {
 }
 
 .message {
-    height: 7em;
+    min-height: 7em;
     border: 2px solid black;
     margin: 2rem 20%;
     display: block;
@@ -309,4 +309,9 @@ app {
 
 .tile-space.tile-selected {
     transform: scale(1.3);
+}
+
+.letter-selector button {
+    width: 100%;
+    margin-bottom: 1rem;
 }

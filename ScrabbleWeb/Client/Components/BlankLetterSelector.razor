@@ -1,0 +1,20 @@
+﻿<div class="container letter-selector">
+    <div class="row">
+        @for (char c = 'A'; c <= 'Z'; c++)
+        {
+            char letter = c;
+            <div class="col-2">
+                <button @onclick="e => Submit(letter)" class="btn btn-sm btn-primary">@letter</button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    void Submit(char letter)
+    {
+        BlazoredModal.Close(ModalResult.Ok<char>((char)(letter + ('a'-'A'))));
+    }
+}
