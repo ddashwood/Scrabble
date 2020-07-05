@@ -145,6 +145,28 @@ namespace ScrabbleGameTests
         }
 
         [Fact]
+        public void BingoBonusTest()
+        {
+            Game game = GetGameWithEmptyBoard();
+            Move move = new Move(game, new List<TilePlacement>
+            {
+                new TilePlacement(7, 7, 'A'),
+                new TilePlacement(7, 8, 'A'),
+                new TilePlacement(7, 9, 'A'),
+                new TilePlacement(7, 10, 'A'),
+                new TilePlacement(7, 11, 'A'),
+                new TilePlacement(7, 12, 'A'),
+                new TilePlacement(7, 13, 'A'),
+            });
+
+            int actual = move.GetScore(out string _);
+
+            // Includes 50 point bonus for "Bingo"
+            // Also, one of the A's is on a double-letter
+            Assert.Equal(58, actual);
+        }
+
+        [Fact]
         public void FindInvalidWordsTest()
         {
             string words = $"FLAPS{Environment.NewLine}" +

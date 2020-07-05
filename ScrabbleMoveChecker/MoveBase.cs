@@ -56,7 +56,13 @@ namespace ScrabbleMoveChecker
             }
 
             var words = FindWords();
-            return words.Sum(w => w.Score);
+            var score = words.Sum(w => w.Score);
+            if (placements.Count == 7)
+            {
+                // Bonus for "Bingo"
+                score += 50;
+            }
+            return score;
         }
 
         protected internal bool IsValidMove(out string error)
