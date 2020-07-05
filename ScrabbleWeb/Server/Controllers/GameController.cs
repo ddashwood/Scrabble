@@ -40,8 +40,8 @@ namespace ScrabbleWeb.Server.Controllers
             };
         }
 
-        [HttpPost]
-        public ActionResult<MoveResultDto> Post(List<TilePlacement> placements)
+        [HttpPost("{id}")]
+        public ActionResult<MoveResultDto> Post(List<TilePlacement> placements, int id)
         {
             var move = new Move(game);
             foreach (var placement in placements)
@@ -65,7 +65,7 @@ namespace ScrabbleWeb.Server.Controllers
             }
 
             move.Play();
-            return Ok(new MoveResultDto(Get(123)));
+            return Ok(new MoveResultDto(Get(id)));
         }
     }
 }
