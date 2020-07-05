@@ -64,7 +64,11 @@ else
                             }
 
                             <div class=@($"tile-space {multiplierClass}{(thisSelected ? " tile-selected": "")}")
-                                 @onclick="e => (boardSpaceEmpty ? EndMove(new BoardPosition(game, boardX, boardY)) : userTile != ' ' ? StartMove(new BoardPosition(game, boardX, boardY)) : Task.CompletedTask)">
+                                 @onclick="e => (boardSpaceEmpty ? 
+                                                        EndMove(new BoardPosition(game, boardX, boardY, GetBlankTileLetter)) :
+                                                 userTile != ' ' ?
+                                                        StartMove(new BoardPosition(game, boardX, boardY, GetBlankTileLetter)) :
+                                                        Task.CompletedTask)">
                                 @if (tile != ' ')
                                 {
                                     <div class="tile-container">
@@ -237,5 +241,10 @@ else
         UpdateMessage();
         StateHasChanged();
         return Task.CompletedTask;
+    }
+
+    private char GetBlankTileLetter()
+    {
+        return 'a';
     }
 }

@@ -9,24 +9,16 @@ namespace ScrabbleWeb.Client.Game
     public class BoardPosition : ITilePosition
     {
         private readonly Game game;
+        private readonly Func<char> getBlankTile;
         public int X { get; }
         public int Y { get; }
 
-        public BoardPosition(Game game, int x, int y)
+        public BoardPosition(Game game, int x, int y, Func<char> blankTileGetter)
         {
             this.game = game;
+            getBlankTile = blankTileGetter;
             X = x;
             Y = y;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is BoardPosition other && (other.X, other.Y) == (X, Y);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(X, Y);
         }
 
         public void RemoveTile()
@@ -36,6 +28,12 @@ namespace ScrabbleWeb.Client.Game
 
         public void AddTile(char tile)
         {
+            // If the tile is not a capital letter, that means that
+            // a blank tile is being removed from the board (or moved around the rack)
+            if (tile < 'A' || tile > 'Z')
+            {
+                tile = getBlankTile();
+            }
             game.Move.AddPlacement(new TilePlacement(X, Y, tile));
         }
 
@@ -48,6 +46,16 @@ namespace ScrabbleWeb.Client.Game
             }
 
             return tile;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is BoardPosition other && (other.X, other.Y) == (X, Y);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y);
         }
     }
 }

@@ -16,6 +16,28 @@ namespace ScrabbleWeb.Client.Game
             Space = space;
         }
 
+        public void RemoveTile()
+        {
+            game.PlayerTiles[Space] = ' ';
+        }
+
+        public void AddTile(char tile)
+        {
+            // If the tile is not a capital letter, that means that
+            // a blank tile is being removed from the board (or moved around the rack)
+            if (tile < 'A' || tile > 'Z')
+            {
+                tile = '*';
+            }
+
+            game.PlayerTiles[Space] = tile;
+        }
+
+        public char GetTile()
+        {
+            return game.PlayerTiles[Space];
+        }
+
         public override bool Equals(object obj)
         {
             return obj is RackPosition other && other.Space == Space;
@@ -24,21 +46,6 @@ namespace ScrabbleWeb.Client.Game
         public override int GetHashCode()
         {
             return Space.GetHashCode();
-        }
-
-        public void RemoveTile()
-        {
-            game.PlayerTiles[Space] = ' ';
-        }
-
-        public void AddTile(char tile)
-        {
-            game.PlayerTiles[Space] = tile;
-        }
-
-        public char GetTile()
-        {
-            return game.PlayerTiles[Space];
         }
     }
 }
