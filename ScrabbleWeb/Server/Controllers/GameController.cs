@@ -41,7 +41,7 @@ namespace ScrabbleWeb.Server.Controllers
         }
 
         [HttpPost]
-        public IEnumerable<string> Post(List<TilePlacement> placements)
+        public ActionResult<MoveResultDto> Post(List<TilePlacement> placements)
         {
             var move = new Move(game);
             foreach (var placement in placements)
@@ -49,18 +49,23 @@ namespace ScrabbleWeb.Server.Controllers
                 move.AddPlacement(placement);
             }
 
+            int score = move.GetScore(out string error);
+            if (!string.IsNullOrEmpty(error))
+            {
+                return UnprocessableEntity(new MoveResultDto(error));
+            }
+
             var badWords = move.InvalidWords().ToList();
 
-            if (badWords.Count() == 0)
+            if (badWords.Count() != 0)
             {
-                move.Play();
-            }
-            else
-            {
-                Response.StatusCode = (int)HttpStatusCode.UnprocessableEntity;
+                var result = new MoveResultDto("The following words are not allowed: " + string.Join(", ", badWords));
+                result.InvalidWords = badWords;
+                return UnprocessableEntity(result);
             }
 
-            return badWords;
+            move.Play();
+            return Ok(new MoveResultDto(Get(123)));
         }
     }
 }

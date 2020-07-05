@@ -181,10 +181,10 @@ else
     private async Task Play()
     {
         var response = await Http.PostAsJsonAsync("/api/game", game.Move.Placements);
+        var responseData = await response.Content.ReadFromJsonAsync<MoveResultDto>();
         if (response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
         {
-            var badWords = (await response.Content.ReadFromJsonAsync<IEnumerable<string>>()).ToList();
-            message = "The following words are not allowed: " + string.Join(", ", badWords);
+            message = responseData.Error;
             messageContext = "danger";
             return;
         }
@@ -196,7 +196,9 @@ else
         }
 
         // Success - reload the board (including new tiles)
-        await LoadGame();
+        game = new Game(responseData.GameDto);
+        message = "Move completed";
+        messageContext = "success";
     }
 
     private Task StartMove(ITilePosition position)
