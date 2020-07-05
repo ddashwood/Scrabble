@@ -32,12 +32,6 @@ namespace ScrabbleWeb.Server.Controllers
         public GameDto Get(int id)
         {
             string board = game.Board;
-            // string.Concat(Enumerable.Repeat("               ", 3)) +
-            //"  T            " + // TEST starts at position 2, 3
-            //"  E            " +
-            //"  m            " +
-            //"  P            " + // and extends to position 2, 6
-            //string.Concat(Enumerable.Repeat("               ", 8));
             return new GameDto
             {
                 Board = board,

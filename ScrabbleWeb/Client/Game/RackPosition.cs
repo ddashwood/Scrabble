@@ -28,7 +28,7 @@ namespace ScrabbleWeb.Client.Game
 
         public void RemoveTile()
         {
-            game.PlayerTiles[Space] = '-';
+            game.PlayerTiles[Space] = ' ';
         }
 
         public void AddTile(char tile)

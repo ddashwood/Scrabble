@@ -25,7 +25,7 @@ namespace ScrabbleGame
         public Game(IWordChecker wordChecker = null)
             : base(new string(' ', BOARD_WIDTH * BOARD_HEIGHT))
         {
-            Player1Tiles = "BLE A-K";
+            Player1Tiles = "BLE*A K";
             this.wordChecker = wordChecker;
         }
 

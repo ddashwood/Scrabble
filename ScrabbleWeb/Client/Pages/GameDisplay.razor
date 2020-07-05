@@ -116,7 +116,7 @@ else
                     {
                         int space = i;
                         char tile = game.PlayerTiles[space];
-                        bool userSpaceEmpty = tile == '-';
+                        bool userSpaceEmpty = tile == ' ';
                         bool thisSelected = (tileBeingMoved is RackPosition moving && moving.Space == space);
                         bool anySelected = (tileBeingMoved != null);
 
@@ -124,9 +124,9 @@ else
                             @if (!userSpaceEmpty)
                             {
                                 <div class="tile-container">
-                                    <div class="tile-content">@tile.ToString().ToUpper()</div>
                                     @if (tile >= 'A' && tile <= 'Z')
                                     {
+                                        <div class="tile-content">@tile.ToString().ToUpper()</div>
                                         <div class="tile-content-score">@GameBase.LetterScore(tile)</div>
                                     }
                                 </div>
@@ -232,6 +232,7 @@ else
         tileBeingMoved.RemoveTile();
 
         tileBeingMoved = null;
+        UpdateMessage();
         StateHasChanged();
         return Task.CompletedTask;
     }
