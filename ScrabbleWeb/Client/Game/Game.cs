@@ -13,7 +13,7 @@ namespace ScrabbleWeb.Client.Game
             :base(dto.Board)
         {
             GameId = dto.GameId;
-            PlayerTiles = dto.PlayerTiles;
+            PlayerTiles = dto.PlayerTiles.ToCharArray();
             Player1Score = dto.Player1Score;
             Player2Score = dto.Player2Score;
             IsPlayer1 = dto.IsPlayer1;
@@ -22,7 +22,7 @@ namespace ScrabbleWeb.Client.Game
         }
 
         public int GameId { get; set; }
-        public string PlayerTiles { get; set; }
+        public char[] PlayerTiles { get; set; }
         public int Player1Score { get; set; }
         public int Player2Score { get; set; }
         public bool IsPlayer1 { get; set; }

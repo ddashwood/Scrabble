@@ -64,7 +64,7 @@ else
                             }
 
                             <div class=@($"tile-space {multiplierClass}{(thisSelected ? " tile-selected": "")}")
-                                 @onclick="e => (boardSpaceEmpty ? EndBoardMove(boardX, boardY) : userTile != ' ' ? StartMove(new BoardPosition(boardX, boardY)) : Task.CompletedTask)">
+                                 @onclick="e => (boardSpaceEmpty ? EndMove(new BoardPosition(game, boardX, boardY)) : userTile != ' ' ? StartMove(new BoardPosition(game, boardX, boardY)) : Task.CompletedTask)">
                                 @if (tile != ' ')
                                 {
                                     <div class="tile-container">
@@ -120,7 +120,7 @@ else
                         bool thisSelected = (tileBeingMoved is RackPosition moving && moving.Space == space);
                         bool anySelected = (tileBeingMoved != null);
 
-                        <div class="@($"tile-space{(thisSelected ? " tile-selected" : "")}")" @onclick="e => (userSpaceEmpty ? EndRackMove(space) : StartMove(new RackPosition(space)))">
+                        <div class="@($"tile-space{(thisSelected ? " tile-selected" : "")}")" @onclick="e => (userSpaceEmpty ? EndMove(new RackPosition(game, space)) : StartMove(new RackPosition(game, space)))">
                             @if (!userSpaceEmpty)
                             {
                                 <div class="tile-container">
@@ -220,7 +220,7 @@ else
         return Task.CompletedTask;
     }
 
-    private Task EndRackMove(int newSpace)
+    private Task EndMove(ITilePosition position)
     {
         if (tileBeingMoved == null)
         {
@@ -228,56 +228,8 @@ else
             return Task.CompletedTask;
         }
 
-        char[] tiles = game.PlayerTiles.ToCharArray();
-
-        switch (tileBeingMoved)
-        {
-            case RackPosition space:
-                // Moving tiles around in the rack
-                (tiles[newSpace], tiles[space.Space]) = (tiles[space.Space], tiles[newSpace]);
-                game.PlayerTiles = new string(tiles);
-                break;
-            case BoardPosition space:
-                // Removing a tile from the board
-                tiles[newSpace] = game.Move[space.X, space.Y];
-                game.PlayerTiles = new string(tiles);
-                game.Move.RemovePlacementAtPosition(space.X, space.Y);
-                UpdateMessage();
-                break;
-        }
-
-        tileBeingMoved = null;
-        StateHasChanged();
-        return Task.CompletedTask;
-    }
-
-    private Task EndBoardMove(int newX, int newY)
-    {
-        if (tileBeingMoved == null)
-        {
-            // No move is taking place
-            return Task.CompletedTask;
-        }
-
-        switch (tileBeingMoved)
-        {
-            case RackPosition space:
-                // Placing a tile on the board
-                char[] tiles = game.PlayerTiles.ToCharArray();
-
-                game.Move.AddPlacement(new TilePlacement(newX, newY, tiles[space.Space]));
-                tiles[space.Space] = '-';
-                game.PlayerTiles = new string(tiles);
-                UpdateMessage();
-                break;
-
-            case BoardPosition space:
-                // Moving a tile around on the board
-                game.Move.AddPlacement(new TilePlacement(newX, newY, game.Move[space.X, space.Y]));
-                game.Move.RemovePlacementAtPosition(space.X, space.Y);
-                UpdateMessage();
-                break;
-        }
+        position.AddTile(tileBeingMoved.GetTile());
+        tileBeingMoved.RemoveTile();
 
         tileBeingMoved = null;
         StateHasChanged();

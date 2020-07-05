@@ -7,5 +7,8 @@ namespace ScrabbleWeb.Client.Game
 {
     interface ITilePosition
     {
+        void RemoveTile();
+        void AddTile(char tile);
+        char GetTile();
     }
 }
