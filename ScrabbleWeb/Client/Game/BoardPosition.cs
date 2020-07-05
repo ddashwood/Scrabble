@@ -5,12 +5,12 @@ using System.Threading.Tasks;
 
 namespace ScrabbleWeb.Client.Game
 {
-    public class DragSpaceOnBoard : IDragSpace
+    public class BoardPosition : ITilePosition
     {
         public int X { get; }
         public int Y { get; }
 
-        public DragSpaceOnBoard(int x, int y)
+        public BoardPosition(int x, int y)
         {
             X = x;
             Y = y;

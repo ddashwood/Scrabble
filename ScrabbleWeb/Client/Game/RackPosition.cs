@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace ScrabbleWeb.Client.Game
 {
-    public class DragSpaceOffBoard : IDragSpace
+    public class RackPosition : ITilePosition
     {
         public int Space { get; }
 
-        public DragSpaceOffBoard(int space)
+        public RackPosition(int space)
         {
             Space = space;
         }

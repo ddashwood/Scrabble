@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ScrabbleWeb.Client.Game
 {
-    interface IDragSpace
+    interface ITilePosition
     {
     }
 }

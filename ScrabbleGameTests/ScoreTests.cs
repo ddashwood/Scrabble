@@ -131,6 +131,20 @@ namespace ScrabbleGameTests
         }
 
         [Fact]
+        public void FirstTileScoreTest()
+        {
+            Game game = GetGameWithEmptyBoard();
+            Move move = new Move(game, new List<TilePlacement>
+            {
+                new TilePlacement(7, 7, 'B'),
+            });
+
+            int actual = move.GetScore(out string _);
+
+            Assert.Equal(3, actual);
+        }
+
+        [Fact]
         public void FindInvalidWordsTest()
         {
             string words = $"FLAPS{Environment.NewLine}" +

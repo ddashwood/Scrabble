@@ -284,10 +284,6 @@ app {
     display: inline-block;
 }
 
-.draggable {
-    cursor: grab;
-}
-
 .message {
     height: 7em;
     border: 2px solid black;
@@ -309,4 +305,8 @@ app {
 
 .tile-container.tile-invalid {
     color: red;
+}
+
+.tile-space.tile-selected {
+    transform: scale(1.3);
 }

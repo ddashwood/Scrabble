@@ -3,7 +3,7 @@
 @using ScrabbleWeb.Shared
 @using ScrabbleWeb.Client.Game
 @using ScrabbleWeb.Client.Components
-@using System.Linq 
+@using System.Linq
 @inject HttpClientNoAuth Http
 
 @if (game == null)
@@ -33,6 +33,8 @@ else
                             bool boardSpaceEmpty = false;
                             int boardX = x;
                             int boardY = y;
+                            bool thisSelected = (tileBeingMoved is BoardPosition moving && moving.X == x && moving.Y == y);
+                            bool anySelected = (tileBeingMoved != null);
 
                             if (tile == ' ')
                             {
@@ -61,48 +63,46 @@ else
                                 }
                             }
 
-                            // @ondragover:preventDefault="boardSpaceEmpty" doesn't seem to work
-                        <div class="tile-space @multiplierClass"
-                             ondragover="@(boardSpaceEmpty ? "event.preventDefault()" : "")"
-                             @ondrop="e => DropOnBoard(e, boardX, boardY)">
-                            @if (tile != ' ')
-                            {
-                                <div class="tile-container">
-                                    <div class="tile-content">@tile.ToString().ToUpper()</div>
-                                    @*Non-capital means a blank tile, so no score*@
-                                    @if (tile >= 'A' && tile <= 'Z')
-                                    {
-                                        <div class="tile-content-score">@GameBase.LetterScore(tile)</div>
-                                    }
-                                </div>
-                            }
-                            else if (userTile != ' ')
-                            {
-                                string containerClass = isValidMove ? "tile-valid" : "tile-invalid";
-                                <div class=@($"tile-container draggable {containerClass}") draggable="true" @ondragstart="e => Drag(e, new DragSpaceOnBoard(boardX, boardY))">
-                                    <div class="tile-content">@userTile.ToString().ToUpper()</div>
-                                    @*Non-capital means a blank tile, so no score*@
-                                    @if (userTile >= 'A' && userTile <= 'Z')
-                                    {
-                                        <div class="tile-content-score">@GameBase.LetterScore(userTile)</div>
-                                    }
-                                </div>
-                            }
-                            else if (!string.IsNullOrEmpty(multiplierClass))
-                            {
-                                <div class="tile-container">
-                                    <div class="tile-container-multiplier1">@char1</div>
-                                    <div class="tile-container-multiplier2">@char2</div>
-                                </div>
-                            }
-                            else if (x == (GameBase.BOARD_WIDTH - 1) / 2 && y == (GameBase.BOARD_HEIGHT - 1) / 2)
-                            {
-                                <div class="tile-container tile-container-centre">
-                                    <div class="tile-content"><span class="oi oi-star" aria-hidden="true"></span></div>
-                                </div>
-                            }
+                            <div class=@($"tile-space {multiplierClass}{(thisSelected ? " tile-selected": "")}")
+                                 @onclick="e => (boardSpaceEmpty ? EndBoardMove(boardX, boardY) : userTile != ' ' ? StartBoardMove(boardX, boardY) : Task.CompletedTask)">
+                                @if (tile != ' ')
+                                {
+                                    <div class="tile-container">
+                                        <div class="tile-content">@tile.ToString().ToUpper()</div>
+                                        @*Non-capital means a blank tile, so no score*@
+                                        @if (tile >= 'A' && tile <= 'Z')
+                                        {
+                                            <div class="tile-content-score">@GameBase.LetterScore(tile)</div>
+                                        }
+                                    </div>
+                                }
+                                else if (userTile != ' ')
+                                {
+                                    string containerClass = isValidMove ? "tile-valid" : "tile-invalid";
+                                    <div class=@($"tile-container {containerClass}")>
+                                        <div class="tile-content">@userTile.ToString().ToUpper()</div>
+                                        @*Non-capital means a blank tile, so no score*@
+                                        @if (userTile >= 'A' && userTile <= 'Z')
+                                        {
+                                            <div class="tile-content-score">@GameBase.LetterScore(userTile)</div>
+                                        }
+                                    </div>
+                                }
+                                else if (!string.IsNullOrEmpty(multiplierClass))
+                                {
+                                    <div class="tile-container">
+                                        <div class="tile-container-multiplier1">@char1</div>
+                                        <div class="tile-container-multiplier2">@char2</div>
+                                    </div>
+                                }
+                                else if (x == (GameBase.BOARD_WIDTH - 1) / 2 && y == (GameBase.BOARD_HEIGHT - 1) / 2)
+                                {
+                                    <div class="tile-container tile-container-centre">
+                                        <div class="tile-content"><span class="oi oi-star" aria-hidden="true"></span></div>
+                                    </div>
+                                }
 
-                        </div>
+                            </div>
                         }
                     </div>
                 }
@@ -117,10 +117,13 @@ else
                         int space = i;
                         char tile = gameData.PlayerTiles[space];
                         bool userSpaceEmpty = tile == '-';
-                        <div class="tile-space" ondragover="@(userSpaceEmpty ? "event.preventDefault()" : "")" @ondrop="e => DropOffBoard(e, space)">
+                        bool thisSelected = (tileBeingMoved is RackPosition moving && moving.Space == space);
+                        bool anySelected = (tileBeingMoved != null);
+
+                        <div class="@($"tile-space{(thisSelected ? " tile-selected" : "")}")" @onclick="e => (userSpaceEmpty ? EndRackMove(space) : StartRackMove(space))">
                             @if (!userSpaceEmpty)
                             {
-                                <div class="tile-container draggable" draggable="true" @ondragstart="e => Drag(e, new DragSpaceOffBoard(space))">
+                                <div class="tile-container">
                                     <div class="tile-content">@tile.ToString().ToUpper()</div>
                                     @if (tile >= 'A' && tile <= 'Z')
                                     {
@@ -144,7 +147,7 @@ else
     GameBase game;
     GameDto gameData;
     MoveBase move;
-    IDragSpace tileBeingDragged;
+    ITilePosition tileBeingMoved;
     string message;
     string messageContext;
     bool isValidMove;
@@ -162,54 +165,6 @@ else
         move = new MoveBase(game);
     }
 
-    private void Drag(DragEventArgs e, IDragSpace tile)
-    {
-        tileBeingDragged = tile;
-    }
-
-    private void DropOffBoard(DragEventArgs e, int newPosition)
-    {
-        char[] tiles = gameData.PlayerTiles.ToCharArray();
-
-        switch (tileBeingDragged)
-        {
-            case DragSpaceOffBoard space:
-                // Moving tiles around in the rack
-                (tiles[newPosition], tiles[space.Space]) = (tiles[space.Space], tiles[newPosition]);
-                gameData.PlayerTiles = new string(tiles);
-                break;
-            case DragSpaceOnBoard space:
-                // Removing a tile from the board
-                tiles[newPosition] = move[space.X, space.Y];
-                gameData.PlayerTiles = new string(tiles);
-                move.RemovePlacementAtPosition(space.X, space.Y);
-                UpdateMessage();
-                break;
-        }
-    }
-
-    private void DropOnBoard(DragEventArgs e, int newX, int newY)
-    {
-        switch (tileBeingDragged)
-        {
-            case DragSpaceOffBoard space:
-                // Placing a tile on the board
-                char[] tiles = gameData.PlayerTiles.ToCharArray();
-
-                move.AddPlacement(new TilePlacement(newX, newY, tiles[space.Space]));
-                tiles[space.Space] = '-';
-                gameData.PlayerTiles = new string(tiles);
-                UpdateMessage();
-                break;
-
-            case DragSpaceOnBoard space:
-                // Moving a tile around on the board
-                move.AddPlacement(new TilePlacement(newX, newY, move[space.X, space.Y]));
-                move.RemovePlacementAtPosition(space.X, space.Y);
-                UpdateMessage();
-                break;
-        }
-    }
 
     private void UpdateMessage()
     {
@@ -246,5 +201,110 @@ else
 
         // Success - reload the board (including new tiles)
         await LoadGame();
+    }
+
+    private Task StartRackMove(int space)
+    {
+        if (tileBeingMoved == null)
+        {
+            tileBeingMoved = new RackPosition(space);
+        }
+        else
+        {
+            // Can't start a move if a move is already happening
+            // If user clicks on the thing already moving, cancel the move
+            if (tileBeingMoved is RackPosition alreadyMoving && alreadyMoving.Space == space)
+            {
+                tileBeingMoved = null;
+
+            }
+        }
+
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task StartBoardMove(int x, int y)
+    {
+        if (tileBeingMoved == null)
+        {
+            tileBeingMoved = new BoardPosition(x, y);
+        }
+        else
+        {
+            // Can't start a move if a move is already happening
+            // If user clicks on the thing already moving, cancel the move
+            if (tileBeingMoved is BoardPosition alreadyMoving && (alreadyMoving.X, alreadyMoving.Y) == (x, y))
+            {
+                tileBeingMoved = null;
+
+            }
+        }
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task EndRackMove(int newSpace)
+    {
+        if (tileBeingMoved == null)
+        {
+            // No move is taking place
+            return Task.CompletedTask;
+        }
+
+        char[] tiles = gameData.PlayerTiles.ToCharArray();
+
+        switch (tileBeingMoved)
+        {
+            case RackPosition space:
+                // Moving tiles around in the rack
+                (tiles[newSpace], tiles[space.Space]) = (tiles[space.Space], tiles[newSpace]);
+                gameData.PlayerTiles = new string(tiles);
+                break;
+            case BoardPosition space:
+                // Removing a tile from the board
+                tiles[newSpace] = move[space.X, space.Y];
+                gameData.PlayerTiles = new string(tiles);
+                move.RemovePlacementAtPosition(space.X, space.Y);
+                UpdateMessage();
+                break;
+        }
+
+        tileBeingMoved = null;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task EndBoardMove(int newX, int newY)
+    {
+        if (tileBeingMoved == null)
+        {
+            // No move is taking place
+            return Task.CompletedTask;
+        }
+
+        switch (tileBeingMoved)
+        {
+            case RackPosition space:
+                // Placing a tile on the board
+                char[] tiles = gameData.PlayerTiles.ToCharArray();
+
+                move.AddPlacement(new TilePlacement(newX, newY, tiles[space.Space]));
+                tiles[space.Space] = '-';
+                gameData.PlayerTiles = new string(tiles);
+                UpdateMessage();
+                break;
+
+            case BoardPosition space:
+                // Moving a tile around on the board
+                move.AddPlacement(new TilePlacement(newX, newY, move[space.X, space.Y]));
+                move.RemovePlacementAtPosition(space.X, space.Y);
+                UpdateMessage();
+                break;
+        }
+
+        tileBeingMoved = null;
+        StateHasChanged();
+        return Task.CompletedTask;
     }
 }

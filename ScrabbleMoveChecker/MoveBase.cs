@@ -224,7 +224,7 @@ namespace ScrabbleMoveChecker
             }
 
             var mainWord = mainWordBuilder.GetPlayedWord();
-            if (mainWord.ToString().Length > 1)
+            if (mainWord.ToString().Length > 1 || game.IsFirstMove())
             {
                 results.Add(mainWord);
             }
