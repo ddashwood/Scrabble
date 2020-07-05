@@ -31,10 +31,8 @@ else
                             string char1 = "";
                             string char2 = "";
                             bool boardSpaceEmpty = false;
-                            int boardX = x;
-                            int boardY = y;
-                            bool thisSelected = (tileBeingMoved is BoardPosition moving && moving.X == x && moving.Y == y);
-                            bool anySelected = (tileBeingMoved != null);
+                            ITilePosition position = new BoardPosition(game, x, y, GetBlankTileLetter);
+                            bool thisSelected = position.Equals(tileBeingMoved);
 
                             if (tile == ' ')
                             {
@@ -65,9 +63,9 @@ else
 
                             <div class=@($"tile-space {multiplierClass}{(thisSelected ? " tile-selected": "")}")
                                  @onclick="e => (boardSpaceEmpty ? 
-                                                        EndMove(new BoardPosition(game, boardX, boardY, GetBlankTileLetter)) :
+                                                        EndMove(position) :
                                                  userTile != ' ' ?
-                                                        StartMove(new BoardPosition(game, boardX, boardY, GetBlankTileLetter)) :
+                                                        StartMove(position) :
                                                         Task.CompletedTask)">
                                 @if (tile != ' ')
                                 {
@@ -112,7 +110,7 @@ else
                 }
             </div>
         </div>
-
+        
         <div class="game-element-container">
             <div class="player-tiles">
                 <div class="tile-row">
@@ -120,14 +118,15 @@ else
                     {
                         int space = i;
                         char tile = game.PlayerTiles[space];
+                        ITilePosition position = new RackPosition(game, space);
                         bool userSpaceEmpty = tile == ' ';
-                        bool thisSelected = (tileBeingMoved is RackPosition moving && moving.Space == space);
-                        bool anySelected = (tileBeingMoved != null);
+                        bool thisSelected = position.Equals(tileBeingMoved);
 
-                        <div class="@($"tile-space{(thisSelected ? " tile-selected" : "")}")" @onclick="e => (userSpaceEmpty ? EndMove(new RackPosition(game, space)) : StartMove(new RackPosition(game, space)))">
+                        <div class="@($"tile-space{(thisSelected ? " tile-selected" : "")}")" @onclick="e => (userSpaceEmpty ? EndMove(position) : StartMove(position))">
                             @if (!userSpaceEmpty)
                             {
                                 <div class="tile-container">
+                                    @* If not a capital letter, it's a blank tile *@
                                     @if (tile >= 'A' && tile <= 'Z')
                                     {
                                         <div class="tile-content">@tile.ToString().ToUpper()</div>
