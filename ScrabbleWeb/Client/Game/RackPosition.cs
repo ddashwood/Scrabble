@@ -13,5 +13,15 @@ namespace ScrabbleWeb.Client.Game
         {
             Space = space;
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj is RackPosition other && other.Space == Space;
+        }
+
+        public override int GetHashCode()
+        {
+            return Space.GetHashCode();
+        }
     }
 }

@@ -15,5 +15,15 @@ namespace ScrabbleWeb.Client.Game
             X = x;
             Y = y;
         }
+
+        public override bool Equals(object obj)
+        {
+            return obj is BoardPosition other && (other.X, other.Y) == (X, Y);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y);
+        }
     }
 }

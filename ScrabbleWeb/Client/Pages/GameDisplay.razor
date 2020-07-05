@@ -64,7 +64,7 @@ else
                             }
 
                             <div class=@($"tile-space {multiplierClass}{(thisSelected ? " tile-selected": "")}")
-                                 @onclick="e => (boardSpaceEmpty ? EndBoardMove(boardX, boardY) : userTile != ' ' ? StartBoardMove(boardX, boardY) : Task.CompletedTask)">
+                                 @onclick="e => (boardSpaceEmpty ? EndBoardMove(boardX, boardY) : userTile != ' ' ? StartMove(new BoardPosition(boardX, boardY)) : Task.CompletedTask)">
                                 @if (tile != ' ')
                                 {
                                     <div class="tile-container">
@@ -120,7 +120,7 @@ else
                         bool thisSelected = (tileBeingMoved is RackPosition moving && moving.Space == space);
                         bool anySelected = (tileBeingMoved != null);
 
-                        <div class="@($"tile-space{(thisSelected ? " tile-selected" : "")}")" @onclick="e => (userSpaceEmpty ? EndRackMove(space) : StartRackMove(space))">
+                        <div class="@($"tile-space{(thisSelected ? " tile-selected" : "")}")" @onclick="e => (userSpaceEmpty ? EndRackMove(space) : StartMove(new RackPosition(space)))">
                             @if (!userSpaceEmpty)
                             {
                                 <div class="tile-container">
@@ -203,43 +203,23 @@ else
         await LoadGame();
     }
 
-    private Task StartRackMove(int space)
+    private Task StartMove(ITilePosition position)
     {
         if (tileBeingMoved == null)
         {
-            tileBeingMoved = new RackPosition(space);
+            tileBeingMoved = position;
         }
         else
         {
             // Can't start a move if a move is already happening
             // If user clicks on the thing already moving, cancel the move
-            if (tileBeingMoved is RackPosition alreadyMoving && alreadyMoving.Space == space)
+            if (tileBeingMoved.Equals(position))
             {
                 tileBeingMoved = null;
 
             }
         }
 
-        StateHasChanged();
-        return Task.CompletedTask;
-    }
-
-    private Task StartBoardMove(int x, int y)
-    {
-        if (tileBeingMoved == null)
-        {
-            tileBeingMoved = new BoardPosition(x, y);
-        }
-        else
-        {
-            // Can't start a move if a move is already happening
-            // If user clicks on the thing already moving, cancel the move
-            if (tileBeingMoved is BoardPosition alreadyMoving && (alreadyMoving.X, alreadyMoving.Y) == (x, y))
-            {
-                tileBeingMoved = null;
-
-            }
-        }
         StateHasChanged();
         return Task.CompletedTask;
     }
