@@ -21,7 +21,7 @@ namespace ScrabbleWeb.Client.Game
             game.PlayerTiles[Space] = ' ';
         }
 
-        public void AddTile(char tile)
+        public Task AddTile(char tile)
         {
             // If the tile is not a capital letter, that means that
             // a blank tile is being removed from the board (or moved around the rack)
@@ -31,6 +31,7 @@ namespace ScrabbleWeb.Client.Game
             }
 
             game.PlayerTiles[Space] = tile;
+            return Task.CompletedTask;
         }
 
         public char GetTile()

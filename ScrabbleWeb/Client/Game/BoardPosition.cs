@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace ScrabbleWeb.Client.Game
@@ -9,11 +10,11 @@ namespace ScrabbleWeb.Client.Game
     public class BoardPosition : ITilePosition
     {
         private readonly Game game;
-        private readonly Func<char> getBlankTile;
+        private readonly Func<Task<char>> getBlankTile;
         public int X { get; }
         public int Y { get; }
 
-        public BoardPosition(Game game, int x, int y, Func<char> blankTileGetter)
+        public BoardPosition(Game game, int x, int y, Func<Task<char>> blankTileGetter)
         {
             this.game = game;
             getBlankTile = blankTileGetter;
@@ -26,13 +27,13 @@ namespace ScrabbleWeb.Client.Game
             game.Move.RemovePlacementAtPosition(X, Y);
         }
 
-        public void AddTile(char tile)
+        public async Task AddTile(char tile)
         {
             // If the tile is not a capital letter, that means that
             // a blank tile is being removed from the board (or moved around the rack)
             if (tile < 'A' || tile > 'Z')
             {
-                tile = getBlankTile();
+                tile = await getBlankTile();
             }
             game.Move.AddPlacement(new TilePlacement(X, Y, tile));
         }

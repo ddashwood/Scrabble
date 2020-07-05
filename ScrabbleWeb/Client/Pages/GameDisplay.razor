@@ -225,25 +225,24 @@ else
         return Task.CompletedTask;
     }
 
-    private Task EndMove(ITilePosition position)
+    private async Task EndMove(ITilePosition position)
     {
         if (tileBeingMoved == null)
         {
             // No move is taking place
-            return Task.CompletedTask;
+            return;
         }
 
-        position.AddTile(tileBeingMoved.GetTile());
+        await position.AddTile(tileBeingMoved.GetTile());
         tileBeingMoved.RemoveTile();
 
         tileBeingMoved = null;
         UpdateMessage();
         StateHasChanged();
-        return Task.CompletedTask;
     }
 
-    private char GetBlankTileLetter()
+    private Task<char> GetBlankTileLetter()
     {
-        return 'a';
+        return Task.FromResult('a');
     }
 }
