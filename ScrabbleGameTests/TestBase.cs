@@ -1,4 +1,5 @@
-﻿using ScrabbleData;
+﻿using AutoMapper;
+using ScrabbleData;
 using ScrabbleGame;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,17 @@ namespace ScrabbleGameTests
 {
     public abstract class TestBase
     {
+        protected IMapper mapper;
+
+        public TestBase()
+        {
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Game, GameData>().ReverseMap();
+            });
+            mapper = config.CreateMapper();
+        }
+
         protected static Stream GenerateStreamFromString(string s)
         {
             var stream = new MemoryStream();
@@ -24,7 +36,7 @@ namespace ScrabbleGameTests
         {
             string board = new string(' ', Game.BOARD_HEIGHT * Game.BOARD_WIDTH);
             GameData data = new GameData { Board = board };
-            return new Game(data);
+            return mapper.Map<Game>(data);
         }
 
         protected Game GetGameWithSingleVerticalWord(IWordChecker wordChecker = null)
@@ -36,7 +48,9 @@ namespace ScrabbleGameTests
                            "  T            " + // and extends to position 2, 6
                            string.Concat(Enumerable.Repeat("               ", 8));
             GameData data = new GameData { Board = board };
-            return new Game(data, wordChecker);
+            Game game = mapper.Map<Game>(data);
+            game.WordChecker = wordChecker;
+            return game;
         }
 
         protected Game GetGameWithSingleVerticalWordAtTop()
@@ -47,7 +61,7 @@ namespace ScrabbleGameTests
                            "  T            " + // and extends to position 2, 3
                            string.Concat(Enumerable.Repeat("               ", 11));
             GameData data = new GameData { Board = board };
-            return new Game(data);
+            return mapper.Map<Game>(data);
         }
 
         protected Game GetGameWithSingleVerticalWordAtBottom()
@@ -58,7 +72,7 @@ namespace ScrabbleGameTests
                            "  S            " +
                            "  T            ";  // and extends to position 2, 14
             GameData data = new GameData { Board = board };
-            return new Game(data);
+            return mapper.Map<Game>(data);
         }
 
         protected Game GetGameWithSingleHorizontalWord()
@@ -68,7 +82,7 @@ namespace ScrabbleGameTests
                                                // and extends to position 5, 6
                            string.Concat(Enumerable.Repeat("               ", 8));
             GameData data = new GameData { Board = board };
-            return new Game(data);
+            return mapper.Map<Game>(data);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace ScrabbleGameTests
             Assert.Equal(Game.BOARD_HEIGHT * Game.BOARD_WIDTH, board.Length);
 
             GameData data = new GameData { Board = board };
-            Game game = new Game(data);
+            Game game = mapper.Map<Game>(data);
 
             Assert.Equal(' ', game[3, 4]);
         }

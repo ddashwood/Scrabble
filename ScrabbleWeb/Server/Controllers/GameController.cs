@@ -12,6 +12,7 @@ using ScrabbleData;
 using ScrabbleGame;
 using ScrabbleMoveChecker;
 using ScrabbleWeb.Server.Data;
+using ScrabbleWeb.Server.Mapping;
 using ScrabbleWeb.Shared;
 
 namespace ScrabbleWeb.Server.Controllers
@@ -35,21 +36,16 @@ namespace ScrabbleWeb.Server.Controllers
             this.wordCheckerFactory = wordCheckerFactory;
             this.userManager = userManager;
             this.mapper = mapper;
-            game = game ?? new Game(wordCheckerFactory.GetWordChecker());
         }
 
-        static Game game;
 
         [HttpGet("{id}")]
         public GameDto Get(int id)
         {
-            string board = game.Board;
-            return new GameDto
-            {
-                Board = board,
-                PlayerTiles = game.Player1Tiles,
-                OtherPlayerName = "Test Player"
-            };
+            GameData gameData = context.Games.Single(g => g.GameId == id);
+            Game game = mapper.Map<Game>(gameData);
+
+            return game.ToDto();
         }
 
         [HttpPost("{email}")]
@@ -81,34 +77,6 @@ namespace ScrabbleWeb.Server.Controllers
             await context.SaveChangesAsync();
 
             return new NewGameDto { NewGameId = gameData.GameId };
-        }
-
-        [HttpPost("/api/move/{id}")]
-        public ActionResult<MoveResultDto> Post(List<TilePlacement> placements, int id)
-        {
-            var move = new Move(game);
-            foreach (var placement in placements)
-            {
-                move.AddPlacement(placement);
-            }
-
-            int score = move.GetScore(out string error);
-            if (!string.IsNullOrEmpty(error))
-            {
-                return UnprocessableEntity(new MoveResultDto(error));
-            }
-
-            var badWords = move.InvalidWords().ToList();
-
-            if (badWords.Count() != 0)
-            {
-                var result = new MoveResultDto("The following words are not allowed: " + string.Join(", ", badWords));
-                result.InvalidWords = badWords;
-                return UnprocessableEntity(result);
-            }
-
-            move.Play();
-            return Ok(new MoveResultDto(Get(id)));
         }
     }
 }
