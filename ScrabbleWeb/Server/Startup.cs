@@ -12,9 +12,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
 using ScrabbleWeb.Server.Data;
-using ScrabbleWeb.Server.Models;
 using ScrabbleGame;
 using ScrabbleData;
+using System.Threading.Tasks;
+using System.Security.Claims;
+using Microsoft.Extensions.Options;
+using IdentityServer4.Services;
+using IdentityServer4.Models;
+using ScrabbleWeb.Server.Identity;
 
 namespace ScrabbleWeb.Server
 {
@@ -37,8 +42,13 @@ namespace ScrabbleWeb.Server
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<Player>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddDefaultIdentity<Player>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+                options.Password.RequireNonAlphanumeric = false;
+            })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddClaimsPrincipalFactory<ApplicationClaimsPrincipalFactory>();
 
             services.AddIdentityServer()
                 .AddApiAuthorization<Player, ApplicationDbContext>();
