@@ -315,3 +315,7 @@ app {
     width: 100%;
     margin-bottom: 1rem;
 }
+
+.clickable {
+    cursor: pointer;
+}
