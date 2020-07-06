@@ -167,7 +167,6 @@ else
     {
         var data = await Http.GetFromJsonAsync<GameDto>($"/api/game/{GameId}");
         game = new Game(data);
-        game.Move.AddPlacement(new TilePlacement(0, 0, 'B'));
     }
 
 
