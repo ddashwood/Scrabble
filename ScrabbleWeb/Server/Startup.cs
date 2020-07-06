@@ -14,6 +14,7 @@ using System.Linq;
 using ScrabbleWeb.Server.Data;
 using ScrabbleWeb.Server.Models;
 using ScrabbleGame;
+using ScrabbleData;
 
 namespace ScrabbleWeb.Server
 {
@@ -36,11 +37,11 @@ namespace ScrabbleWeb.Server
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<Player>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer()
-                .AddApiAuthorization<Models.ApplicationUser, ApplicationDbContext>();
+                .AddApiAuthorization<Player, ApplicationDbContext>();
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();

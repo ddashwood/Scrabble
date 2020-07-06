@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ScrabbleWeb.Server.Models
 {
-    public class ApplicationUser : IdentityUser
-    {
-    }
+    //public class ApplicationUser : IdentityUser
+    //{
+    //}
 }
