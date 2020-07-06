@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ScrabbleData;
 using ScrabbleGame;
 using ScrabbleMoveChecker;
@@ -40,11 +41,16 @@ namespace ScrabbleWeb.Server.Controllers
 
 
         [HttpGet("{id}")]
-        public GameDto Get(int id)
+        public async Task<ActionResult<GameDto>> Get(int id)
         {
-            GameData gameData = context.Games.Single(g => g.GameId == id);
-            Game game = mapper.Map<Game>(gameData);
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            GameData gameData = await context.Games.SingleAsync(g => g.GameId == id);
+            if (gameData.Player1Id != userId && gameData.Player2Id != userId)
+            {
+                return Forbid();
+            }
 
+            Game game = mapper.Map<Game>(gameData);
             return game.ToDto();
         }
 

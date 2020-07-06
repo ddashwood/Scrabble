@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ScrabbleData;
 using ScrabbleGame;
 using ScrabbleMoveChecker;
@@ -35,9 +36,15 @@ namespace ScrabbleWeb.Server.Controllers
         }
 
         [HttpPost("{id}")]
-        public ActionResult<MoveResultDto> Post(List<TilePlacement> placements, int id)
+        public async Task<ActionResult<MoveResultDto>> Post(List<TilePlacement> placements, int id)
         {
-            GameData gameData = context.Games.Single(g => g.GameId == id);
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            GameData gameData = await context.Games.SingleAsync(g => g.GameId == id);
+            if (gameData.Player1Id != userId && gameData.Player2Id != userId)
+            {
+                return Forbid();
+            }
+
             Game game = mapper.Map<Game>(gameData);
             game.WordChecker = wordCheckerFactory.GetWordChecker();
 
@@ -66,7 +73,7 @@ namespace ScrabbleWeb.Server.Controllers
 
             mapper.Map(game, gameData);
 
-            context.SaveChanges();
+            await context.SaveChangesAsync();
 
             return Ok(new MoveResultDto(game.ToDto()));
         }
