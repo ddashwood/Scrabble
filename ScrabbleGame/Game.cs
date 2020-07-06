@@ -12,14 +12,17 @@ namespace ScrabbleGame
     public class Game : GameBase
     {
         public IWordChecker WordChecker { get; set; }
-        public string Player1Id { get; private set; }
-        public string Player2Id { get; private set; }
+        //public string Player1Id { get; private set; }
+        //public string Player2Id { get; private set; }
         public string RemainingTiles { get; private set; }
-        public string Player1Tiles { get; private set; }
-        public string Player2Tiles { get; private set; }
+        //public string Player1Tiles { get; private set; }
+        //public string Player2Tiles { get; private set; }
 
-        public int Player1Score { get; private set; }
-        public int Player2Score { get; private set; }
+        //public int Player1Score { get; private set; }
+        //public int Player2Score { get; private set; }
+
+        public GamePlayer Player1 { get; set; } = new GamePlayer();
+        public GamePlayer Player2 { get; set; } = new GamePlayer();
 
         public Game()
             : base(new string(' ', BOARD_WIDTH * BOARD_HEIGHT))
@@ -56,14 +59,14 @@ namespace ScrabbleGame
 
         public void SetupNewGame(string player1, string player2)
         {
-            Player1Id = player1;
-            Player2Id = player2;
+            Player1.Id = player1;
+            Player2.Id = player2;
             Board = new string(' ', BOARD_WIDTH * BOARD_HEIGHT);
             RemainingTiles = "ABC";
-            Player1Tiles = "BLA*E K";
-            Player2Tiles = "BLA*E K";
-            Player1Score = 0;
-            Player2Score = 0;
+            Player1.Tiles = "BLA*E K";
+            Player2.Tiles = "BLA*E K";
+            Player1.Score = 0;
+            Player2.Score = 0;
         }
     }
 }

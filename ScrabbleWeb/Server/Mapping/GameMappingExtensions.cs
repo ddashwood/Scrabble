@@ -14,7 +14,7 @@ namespace ScrabbleWeb.Server.Mapping
             return new GameDto
             {
                 Board = game.Board,
-                PlayerTiles = game.Player1Tiles,
+                PlayerTiles = game.Player1.Tiles,
                 OtherPlayerName = "Test Player"
             };
         }
