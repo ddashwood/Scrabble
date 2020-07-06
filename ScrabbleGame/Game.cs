@@ -12,9 +12,9 @@ namespace ScrabbleGame
     public class Game : GameBase
     {
         private readonly IWordChecker wordChecker;
-        private int GameId { get; }
-        private string Player1Id { get; }
-        public string Player2Id { get; }
+        public int GameId { get; }
+        public string Player1Id { get; private set; }
+        public string Player2Id { get; private set; }
         public string RemainingTiles { get; private set; }
         public string Player1Tiles { get; private set; }
         public string Player2Tiles { get; private set; }
@@ -73,6 +73,13 @@ namespace ScrabbleGame
                 spaces[index] = value;
                 Board = new string(spaces);
             }
+        }
+
+        public void SetupNewGame(string player1, string player2)
+        {
+            Player1Id = player1;
+            Player2Id = player2;
+            Board = new string(' ', BOARD_WIDTH * BOARD_HEIGHT);
         }
     }
 }

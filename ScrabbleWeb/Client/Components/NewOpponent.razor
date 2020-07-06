@@ -1,0 +1,44 @@
+﻿@inject HttpClient Http
+
+@using System.Net
+@using ScrabbleWeb.Shared
+
+<div class="container">
+    <div class="row">
+        <p class="text-danger">@Error</p>
+    </div>
+    <div class="row">
+        <p>Enter the e-mail address of the person you want to play against:</p>
+    </div>
+    <div class="row">
+        <p>
+            <input type="email" @bind-value="Email" @bind-value:event="oninput" />
+        </p>
+    </div>
+    <div class="row">
+        <p>
+            <button @onclick="Submit" class="btn btn-success" disabled=@ButtonDisabled>Start Game</button>
+        </p>
+    </div>
+</div>
+
+
+@code {
+    private string Email { get; set; }
+    private string Error { get; set; }
+    private bool ButtonDisabled => string.IsNullOrWhiteSpace(Email);
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    private async Task Submit()
+    {
+        var response = await Http.PostAsync($"/api/game/{WebUtility.HtmlEncode(Email)}", null);
+        var responseData = await response.Content.ReadFromJsonAsync<NewGameDto>();
+        if (response.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            Error = responseData.Error ?? "Something went wrong";
+            return;
+        }
+
+        BlazoredModal.Close(ModalResult.Ok<int>(responseData.NewGameId));
+    }
+}

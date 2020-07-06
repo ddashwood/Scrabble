@@ -4,7 +4,7 @@
 @using ScrabbleWeb.Client.Game
 @using ScrabbleWeb.Client.Components
 @using System.Linq
-@inject HttpClientNoAuth Http
+@inject HttpClient Http
 @inject IModalService Modal
 
 @if (game == null)
@@ -188,7 +188,7 @@ else
 
     private async Task Play()
     {
-        var response = await Http.PostAsJsonAsync($"/api/game/{GameId}", game.Move.Placements);
+        var response = await Http.PostAsJsonAsync($"/api/move/{GameId}", game.Move.Placements);
         var responseData = await response.Content.ReadFromJsonAsync<MoveResultDto>();
         if (response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
         {

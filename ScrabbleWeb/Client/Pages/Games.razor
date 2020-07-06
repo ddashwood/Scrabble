@@ -1,0 +1,28 @@
+﻿@page "/games"
+@using ScrabbleWeb.Client.Components
+@using System.Net
+
+@inject HttpClient Http
+@inject IModalService Modal
+@inject NavigationManager NavigationManager
+
+<h3>Games</h3>
+
+<div class="container">
+    <div class="row">
+        <button @onclick="NewGame" class="btn btn-success">New Game</button>
+    </div>
+</div>
+
+@code {
+    public async Task NewGame()
+    {
+        var result = await Modal.Show<NewOpponent>("New Game").Result;
+        if (!result.Cancelled)
+        {
+            var newGameId = (int)(result.Data);
+
+            NavigationManager.NavigateTo($"/game/{newGameId}");
+        }
+    }
+}

@@ -14,7 +14,7 @@ namespace ScrabbleWeb.Server.Data
     {
         [Required]
         public string Name { get; set; }
-        public virtual DbSet<GameData> GamesAsPlayer1 { get; set; }
-        public virtual DbSet<GameData> GamesAsPlayer2 { get; set; }
+        public virtual ICollection<GameData> GamesAsPlayer1 { get; set; }
+        public virtual ICollection<GameData> GamesAsPlayer2 { get; set; }
     }
 }
