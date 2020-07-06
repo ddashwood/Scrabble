@@ -80,6 +80,11 @@ namespace ScrabbleGame
             Player1Id = player1;
             Player2Id = player2;
             Board = new string(' ', BOARD_WIDTH * BOARD_HEIGHT);
+            RemainingTiles = "ABC";
+            Player1Tiles = "ABC";
+            Player2Tiles = "ABC";
+            Player1Score = 0;
+            Player2Score = 0;
         }
     }
 }

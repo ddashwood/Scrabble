@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -23,13 +24,17 @@ namespace ScrabbleWeb.Server.Controllers
         private readonly ApplicationDbContext context;
         private readonly IWordCheckerFactory wordCheckerFactory;
         private readonly UserManager<Player> userManager;
+        private readonly IMapper mapper;
+
         public GameController(ApplicationDbContext context, 
             IWordCheckerFactory wordCheckerFactory,
-            UserManager<Player> userManager)
+            UserManager<Player> userManager,
+            IMapper mapper)
         {
             this.context = context;
             this.wordCheckerFactory = wordCheckerFactory;
             this.userManager = userManager;
+            this.mapper = mapper;
             game = game ?? new Game(wordCheckerFactory.GetWordChecker());
         }
 
@@ -66,20 +71,11 @@ namespace ScrabbleWeb.Server.Controllers
 
             Game game = new Game();
             game.SetupNewGame(userId, other.Id);
-            GameData gameData = new GameData
-            {
-                Player1Id = game.Player1Id,
-                Player2Id = game.Player2Id,
-                RemainingTiles = "ABC",
-                Player1Tiles = "ABC",
-                Player2Tiles = "ABC",
-                Player1Score = 0,
-                Player2Score = 0,
-                Board = game.Board,
-                LastMove = DateTime.Now,
-                IsComplete = false,
-                Winner = Winner.NotFinished
-            };
+
+            GameData gameData = mapper.Map<GameData>(game);
+            gameData.LastMove = DateTime.Now;
+            gameData.IsComplete = false;
+            gameData.Winner = Winner.NotFinished;
 
             context.Games.Add(gameData);
             await context.SaveChangesAsync();

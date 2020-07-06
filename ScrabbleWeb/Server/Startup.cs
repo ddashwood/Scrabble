@@ -20,6 +20,7 @@ using Microsoft.Extensions.Options;
 using IdentityServer4.Services;
 using IdentityServer4.Models;
 using ScrabbleWeb.Server.Identity;
+using AutoMapper;
 
 namespace ScrabbleWeb.Server
 {
@@ -37,6 +38,8 @@ namespace ScrabbleWeb.Server
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IWordCheckerFactory, WordCheckerFactory>();
+
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
