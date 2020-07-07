@@ -76,7 +76,7 @@ namespace ScrabbleGame
             NextPlayer = PlayerSelection.N_A;
             var remainingScore = playerWithRemainingTiles.Tiles.Sum(c => LetterScore(c));
             playerWithRemainingTiles.Score -= remainingScore;
-            playerWithNoTiles.Score += remainingScore;
+            playerWithNoTiles.Score += remainingScore; // Only if the player truly has no tiles - but at the moment that's the only way to win that's supported
 
             if (Player1.Score == Player2.Score)
             {

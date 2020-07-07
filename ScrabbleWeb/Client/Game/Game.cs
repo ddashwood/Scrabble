@@ -28,7 +28,7 @@ namespace ScrabbleWeb.Client.Game
         public string OtherName { get; set; }
         public DateTime LastMove { get; set; }
         public bool IsComplete { get; set; }
-        public Winner Winner { get; set; }
+        public WinnerDto Winner { get; set; }
         public MoveBase Move { get; set; }
     }
 }

@@ -45,7 +45,7 @@ namespace ScrabbleWeb.Server.Controllers
                 return Forbid();
             }
 
-            Game game = mapper.Map<Game>(gameData);
+            Game game = await context.Games.Where(g => g.GameId == id).ToGames(context, mapper).SingleAsync();
             game.WordChecker = wordCheckerFactory.GetWordChecker();
 
             var move = new Move(game, userId);
