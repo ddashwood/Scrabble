@@ -9,7 +9,7 @@ using ScrabbleWeb.Server.Data;
 namespace ScrabbleWeb.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200707090717_InitialCreate")]
+    [Migration("20200707145850_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -243,7 +243,7 @@ namespace ScrabbleWeb.Server.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("LastMove")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("DATETIME");
 
                     b.Property<int>("NextPlayer")
                         .HasColumnType("INTEGER");

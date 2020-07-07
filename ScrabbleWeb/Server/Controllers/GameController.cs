@@ -55,7 +55,6 @@ namespace ScrabbleWeb.Server.Controllers
         public async Task<GameListDto> Get()
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-            //var userId = "c6d3f1ed-4f5a-43eb-bb63-d241e37ad97a";
 
             var activeGames = await context.Games
                 .Where(g => (g.Player1Id == userId || g.Player2Id == userId)

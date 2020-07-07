@@ -52,6 +52,7 @@ namespace ScrabbleWeb.Server.Data
                     .WithMany(p => p.GamesAsPlayer2)
                     .HasForeignKey("Player2Id")
                     .HasPrincipalKey("Id");
+                entity.Property(p => p.LastMove).HasColumnType("DATETIME");
 
                 entity.HasCheckConstraint("CK_BOARD_LENGTH", $"LENGTH(Board)={Game.BOARD_WIDTH * Game.BOARD_HEIGHT}");
             });

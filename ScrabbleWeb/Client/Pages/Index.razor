@@ -1,6 +1,14 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+<h1>Scrabble!</h1>
 
-Welcome to your new app.
+<AuthorizeView>
+    <Authorized>
+        <p>Use the Games button the main menu to create or continue a game, or <a href="/games">click here</a></p>
+    </Authorized>
+    <NotAuthorized>
+        <p>Welcome to the Scrabble game! Please ensure you are signed in to continue.</p>
+    </NotAuthorized>
+</AuthorizeView>
 
+<img class="img-fluid" alt="Scrabble" src="/img/scrabble.jpg" />

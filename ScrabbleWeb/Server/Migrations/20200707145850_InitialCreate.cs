@@ -95,7 +95,7 @@ namespace ScrabbleWeb.Server.Migrations
                     Player1Score = table.Column<int>(nullable: false),
                     Player2Score = table.Column<int>(nullable: false),
                     Board = table.Column<string>(nullable: false),
-                    LastMove = table.Column<DateTime>(nullable: false),
+                    LastMove = table.Column<DateTime>(type: "DATETIME", nullable: false),
                     Winner = table.Column<int>(nullable: false),
                     NextPlayer = table.Column<int>(nullable: false)
                 },

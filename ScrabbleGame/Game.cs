@@ -11,6 +11,7 @@ namespace ScrabbleGame
 {
     public class Game : GameBase
     {
+        public const int TILES_PER_PLAYER = 7;
         public int GameId { get; set; }
         public IWordChecker WordChecker { get; set; }
         public string RemainingTiles { get; private set; }
@@ -19,6 +20,9 @@ namespace ScrabbleGame
         public DateTime LastMove { get; set; }
         public Winner Winner { get; set; }
         public PlayerSelection NextPlayer { get; set; }
+
+        private static Random random = new Random();
+        private static object randLock = new object();
 
         public Game()
             : base(new string(' ', BOARD_WIDTH * BOARD_HEIGHT))
@@ -58,14 +62,65 @@ namespace ScrabbleGame
             Player1.Id = player1;
             Player2.Id = player2;
             Board = new string(' ', BOARD_WIDTH * BOARD_HEIGHT);
-            RemainingTiles = "ABC";
-            Player1.Tiles = "BLA*E K";
-            Player2.Tiles = "BLA*E K";
+            RemainingTiles = string.Join("",
+                    new string ('A', 9),
+                    new string ('B', 2),
+                    new string ('C', 2),
+                    new string ('D', 4),
+                    new string ('E', 12),
+                    new string ('F', 2),
+                    new string ('G', 3),
+                    new string ('H', 2),
+                    new string ('I', 9),
+                    new string ('J', 1),
+                    new string ('K', 1),
+                    new string ('L', 4),
+                    new string ('M', 2),
+                    new string ('N', 6),
+                    new string ('O', 8),
+                    new string ('P', 2),
+                    new string ('Q', 1),
+                    new string ('R', 6),
+                    new string ('S', 4),
+                    new string ('T', 6),
+                    new string ('U', 4),
+                    new string ('V', 2),
+                    new string ('W', 2),
+                    new string ('X', 1),
+                    new string ('Y', 2),
+                    new string ('Z', 1),
+                    new string ('*', 2)
+                );
+            StringBuilder player1tiles = new StringBuilder();
+            StringBuilder player2tiles = new StringBuilder();
+            for (int i = 0; i < TILES_PER_PLAYER; i++)
+            {
+                player1tiles.Append(GetCharFromRemainingTiles());
+                player2tiles.Append(GetCharFromRemainingTiles());
+            }
+            Player1.Tiles = player1tiles.ToString();
+            Player2.Tiles = player2tiles.ToString();
             Player1.Score = 0;
             Player2.Score = 0;
             Winner = Winner.NotFinished;
-            NextPlayer = PlayerSelection.Player1;
+            lock(randLock) // Must lock , because random iss static, and therefore shared between threads
+            {
+                NextPlayer = (PlayerSelection)random.Next(2);
+            }
             LastMove = DateTime.Now;
+        }
+
+        private char GetCharFromRemainingTiles()
+        {
+            int position;
+            lock(randLock) // Must lock , because random iss static, and therefore shared between threads
+            {
+                position = random.Next(RemainingTiles.Length);
+            }
+
+            char result = RemainingTiles[position];
+            RemainingTiles = RemainingTiles.Substring(0, position) + RemainingTiles.Substring(position + 1);
+            return result;
         }
     }
 }

@@ -241,7 +241,7 @@ namespace ScrabbleWeb.Server.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("LastMove")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("DATETIME");
 
                     b.Property<int>("NextPlayer")
                         .HasColumnType("INTEGER");
