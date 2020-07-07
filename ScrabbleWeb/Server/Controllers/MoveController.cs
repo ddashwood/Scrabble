@@ -48,7 +48,7 @@ namespace ScrabbleWeb.Server.Controllers
             Game game = mapper.Map<Game>(gameData);
             game.WordChecker = wordCheckerFactory.GetWordChecker();
 
-            var move = new Move(game);
+            var move = new Move(game, userId);
             foreach (var placement in placements)
             {
                 move.AddPlacement(placement);

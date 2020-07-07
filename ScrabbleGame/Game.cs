@@ -2,6 +2,7 @@
 using ScrabbleMoveChecker;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -31,6 +32,64 @@ namespace ScrabbleGame
         internal bool CheckWord(string word)
         {
             return WordChecker.IsWord(word);
+        }
+
+        internal void ReplacePlayerTile(GamePlayer player, char tile)
+        {
+            char realTile = (tile >= 'A' && tile <= 'Z') ? tile : '*'; // Is it a blank tile?
+            int tilePosition = player.Tiles.IndexOf(realTile);
+
+            if (tilePosition == -1)
+            {
+                throw new InvalidOperationException("Attempt to play a tile that is not on the player's rack");
+            }
+
+            var rack = player.Tiles.ToCharArray();
+            rack[tilePosition] = GetCharFromRemainingTiles();
+            player.Tiles = new string(rack);
+        }
+
+        internal void UpdateNextPlayerAndResult()
+        {
+            // TO DO - The game should also be over when there are no valid moves left
+
+            GamePlayer playerWithNoTiles = null;
+            GamePlayer playerWithRemainingTiles = null;
+
+            if (string.IsNullOrWhiteSpace(Player1.Tiles))
+            {
+                (playerWithNoTiles, playerWithRemainingTiles) = (Player1, Player2);
+            }
+            else if (string.IsNullOrWhiteSpace(Player2.Tiles))
+            {
+                (playerWithNoTiles, playerWithRemainingTiles) = (Player2, Player1);
+            }
+
+            if (playerWithNoTiles == null)
+            {
+                // The game is not over
+                NextPlayer = NextPlayer == PlayerSelection.Player1 ? PlayerSelection.Player2 : PlayerSelection.Player1;
+                return;
+            }
+
+            // The game is over
+            NextPlayer = PlayerSelection.N_A;
+            var remainingScore = playerWithRemainingTiles.Tiles.Sum(c => LetterScore(c));
+            playerWithRemainingTiles.Score -= remainingScore;
+            playerWithNoTiles.Score += remainingScore;
+
+            if (Player1.Score == Player2.Score)
+            {
+                Winner = Winner.Draw;
+            }
+            else if (Player1.Score > Player2.Score)
+            {
+                Winner = Winner.Player1;
+            }
+            else
+            {
+                Winner = Winner.Player2;
+            }
         }
 
         // We need to "hide" the indexer from the base class in order to
@@ -112,6 +171,12 @@ namespace ScrabbleGame
 
         private char GetCharFromRemainingTiles()
         {
+            if (RemainingTiles == "")
+            {
+                // No tiles left
+                return ' ';
+            }
+
             int position;
             lock(randLock) // Must lock , because random iss static, and therefore shared between threads
             {
