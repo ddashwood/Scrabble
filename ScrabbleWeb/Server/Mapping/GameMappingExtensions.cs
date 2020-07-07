@@ -12,13 +12,37 @@ namespace ScrabbleWeb.Server.Mapping
 {
     public static class GameMappingExtensions
     {
-        public static GameDto ToDto(this Game game)
+        public static GameDto ToDto(this Game game, string userId)
         {
+            PlayerSelection thisPlayerSelection;
+            if (game.Player1.Id == userId)
+            {
+                thisPlayerSelection = PlayerSelection.Player1;
+            }
+            else if (game.Player2.Id == userId)
+            {
+                thisPlayerSelection = PlayerSelection.Player2;
+            }
+            else
+            {
+                throw new InvalidOperationException("The User Id given is not a participant in this game");
+            }
+
+            GamePlayer thisPlayer;
+            GamePlayer otherPlayer;
+            (thisPlayer, otherPlayer) = thisPlayerSelection == PlayerSelection.Player1 ? (game.Player1, game.Player2) : (game.Player2, game.Player1);
             return new GameDto
             {
+                GameId = game.GameId,
+                MyTiles = thisPlayer.Tiles,
+                MyMove = game.NextPlayer == thisPlayerSelection,
+                MyScore = thisPlayer.Score,
+                OtherScore = otherPlayer.Score,
                 Board = game.Board,
-                MyTiles = game.Player1.Tiles,
-                OtherName = "Test Player"
+                MyName = thisPlayer.Name,
+                OtherName = otherPlayer.Name,
+                LastMove = game.LastMove,
+                Winner = game.Winner
             };
         }
 

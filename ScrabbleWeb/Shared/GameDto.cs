@@ -14,7 +14,6 @@ namespace ScrabbleWeb.Shared
         public string MyName { get; set; }
         public string OtherName { get; set; }
         public DateTime LastMove { get; set; }
-        public bool IsComplete { get; set; }
         public Winner Winner { get; set; }
     }
 }

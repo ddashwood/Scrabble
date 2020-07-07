@@ -75,7 +75,7 @@ namespace ScrabbleWeb.Server.Controllers
 
             await context.SaveChangesAsync();
 
-            return Ok(new MoveResultDto(game.ToDto()));
+            return Ok(new MoveResultDto(game.ToDto(userId)));
         }
 
     }

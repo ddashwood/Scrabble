@@ -11,6 +11,7 @@ namespace ScrabbleGame
 {
     public class Game : GameBase
     {
+        public int GameId { get; set; }
         public IWordChecker WordChecker { get; set; }
         public string RemainingTiles { get; private set; }
         public GamePlayer Player1 { get; set; } = new GamePlayer();

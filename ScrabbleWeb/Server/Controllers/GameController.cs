@@ -44,14 +44,13 @@ namespace ScrabbleWeb.Server.Controllers
         public async Task<ActionResult<GameDto>> Get(int id)
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-            GameData gameData = await context.Games.SingleAsync(g => g.GameId == id);
-            if (gameData.Player1Id != userId && gameData.Player2Id != userId)
+            Game game = await context.Games.Where(g => g.GameId == id).ToGames(context, mapper).SingleAsync();
+            if (game.Player1.Id != userId && game.Player2.Id != userId)
             {
                 return Forbid();
             }
 
-            Game game = mapper.Map<Game>(gameData);
-            return game.ToDto();
+            return game.ToDto(userId);
         }
 
         [AllowAnonymous]

@@ -12,7 +12,10 @@ namespace ScrabbleWeb.Server.Mapping
     {
         public AutoMapperProfile()
         {
-            CreateMap<Game, GameData>().ReverseMap();
+            CreateMap<Game, GameData>()
+                .ForMember(gd => gd.GameId, options => options.Ignore())
+                .ReverseMap()
+                .ForMember(g => g.GameId, options => options.MapFrom(gd => gd.GameId));
             CreateMap<Game, GamePlayers>().ReverseMap();
         }
     }
