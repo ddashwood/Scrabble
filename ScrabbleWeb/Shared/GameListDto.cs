@@ -6,7 +6,7 @@ namespace ScrabbleWeb.Shared
 {
     public class GameListDto
     {
-        public List<GameDto> ActiveGames { get; set; }
-        public List<GameDto> RecentGames { get; set; }
+        public IEnumerable<GameDto> ActiveGames { get; set; }
+        public IEnumerable<GameDto> RecentGames { get; set; }
     }
 }

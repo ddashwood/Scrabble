@@ -1,20 +1,65 @@
 ﻿@page "/games"
 @using ScrabbleWeb.Client.Components
-@using System.Net
+@using ScrabbleWeb.Shared
 
 @inject HttpClient Http
 @inject IModalService Modal
 @inject NavigationManager NavigationManager
+@inject HttpClient Http
 
 <h3>Games</h3>
 
 <div class="container">
     <div class="row">
-        <button @onclick="NewGame" class="btn btn-success">New Game</button>
+        <button @onclick="NewGame" class="btn btn-success ml-5 mb-4">New Game</button>
     </div>
+
+    @if (games == null)
+    {
+        <div>Loading games list</div>
+    }
+    else
+    {
+        <div>
+            <h5>Active Games:</h5>
+        </div>
+        @if (games.ActiveGames.Count() == 0)
+        {
+            <p>You don't have any active games</p>
+        }
+        else
+        {
+            foreach (var game in games.ActiveGames)
+            {
+                <GameRow Game=game />
+            }
+        }
+        <hr />
+        <div>
+            <h5>Recently Finished Games:</h5>
+        </div>
+        @if (games.RecentGames.Count() == 0)
+        {
+            <p>You don't have any recent games</p>
+        }
+        else
+        {
+            foreach (var game in games.RecentGames)
+            {
+                <GameRow Game=game />
+            }
+        }
+    }
 </div>
 
 @code {
+    private GameListDto games;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        games = await Http.GetFromJsonAsync<GameListDto>($"/api/game");
+    }
+
     public async Task NewGame()
     {
         var result = await Modal.Show<NewOpponent>("New Game").Result;

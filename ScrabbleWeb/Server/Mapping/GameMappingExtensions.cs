@@ -42,7 +42,14 @@ namespace ScrabbleWeb.Server.Mapping
                 MyName = thisPlayer.Name,
                 OtherName = otherPlayer.Name,
                 LastMove = game.LastMove,
-                Winner = game.Winner
+                Winner = game.Winner switch
+                {
+                    Winner.NotFinished => WinnerDto.NotFinished,
+                    Winner.Player1 => thisPlayerSelection == PlayerSelection.Player1 ? WinnerDto.YouWon : WinnerDto.OtherPlayerWon,
+                    Winner.Player2 => thisPlayerSelection == PlayerSelection.Player2 ? WinnerDto.YouWon : WinnerDto.OtherPlayerWon,
+                    Winner.Draw => WinnerDto.Draw,
+                    _ => throw new InvalidOperationException("Winner property invalid")
+                }
             };
         }
 

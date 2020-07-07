@@ -1,8 +1,14 @@
-﻿using ScrabbleData;
-using System;
+﻿using System;
 
 namespace ScrabbleWeb.Shared
 {
+    public enum WinnerDto
+    {
+        NotFinished,
+        YouWon,
+        OtherPlayerWon,
+        Draw
+    }
     public class GameDto
     {
         public int GameId { get; set; }
@@ -14,6 +20,6 @@ namespace ScrabbleWeb.Shared
         public string MyName { get; set; }
         public string OtherName { get; set; }
         public DateTime LastMove { get; set; }
-        public Winner Winner { get; set; }
+        public WinnerDto Winner { get; set; }
     }
 }

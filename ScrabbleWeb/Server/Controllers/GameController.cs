@@ -24,17 +24,14 @@ namespace ScrabbleWeb.Server.Controllers
     public class GameController : ControllerBase
     {
         private readonly ApplicationDbContext context;
-        private readonly IWordCheckerFactory wordCheckerFactory;
         private readonly UserManager<Player> userManager;
         private readonly IMapper mapper;
 
         public GameController(ApplicationDbContext context,
-            IWordCheckerFactory wordCheckerFactory,
             UserManager<Player> userManager,
             IMapper mapper)
         {
             this.context = context;
-            this.wordCheckerFactory = wordCheckerFactory;
             this.userManager = userManager;
             this.mapper = mapper;
         }
@@ -55,17 +52,31 @@ namespace ScrabbleWeb.Server.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public async Task Get()
+        public async Task<GameListDto> Get()
         {
-            //var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-            var userId = "c6d3f1ed-4f5a-43eb-bb63-d241e37ad97a";
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            //var userId = "c6d3f1ed-4f5a-43eb-bb63-d241e37ad97a";
 
-            var games = await context.Games
-                .Where(g => g.Player1Id == userId || g.Player2Id == userId)
+            var activeGames = await context.Games
+                .Where(g => (g.Player1Id == userId || g.Player2Id == userId)
+                            && g.Winner == Winner.NotFinished)
                 .OrderByDescending(g => g.LastMove)
-                .Take(3)
                 .ToGames(context, mapper)
                 .ToListAsync();
+
+            var recentGames = await context.Games
+                .Where(g => (g.Player1Id == userId || g.Player2Id == userId)
+                            && g.Winner != Winner.NotFinished)
+                .OrderByDescending(g => g.LastMove)
+                .Take(5)
+                .ToGames(context, mapper)
+                .ToListAsync();
+
+            return new GameListDto
+            {
+                ActiveGames = activeGames.Select(g => g.ToDto(userId)),
+                RecentGames = recentGames.Select(g => g.ToDto(userId))
+            };
         }
 
         [HttpPost("{email}")]

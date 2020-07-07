@@ -1,0 +1,39 @@
+﻿@using ScrabbleWeb.Shared
+
+@{
+    string background = Game.Winner switch
+    {
+        WinnerDto.NotFinished => Game.MyMove ? "info" : "secondary",
+        WinnerDto.YouWon => "success",
+        WinnerDto.OtherPlayerWon => "danger",
+        WinnerDto.Draw => "primary",
+        _ => "danger"
+    };
+}
+
+<a class="game-link" href=@($"/game/{Game.GameId}")>
+    <div class=@($"game-card ml-3 card text-white bg-{background}")>
+        <div class="card-body">
+            <p>Game with @Game.OtherName, your score @Game.MyScore, their score @Game.OtherScore</p>
+            @switch (Game.Winner)
+            {
+                case WinnerDto.NotFinished:
+                    <p>Next player: @(Game.MyMove?"you" : Game.OtherName)</p>
+                    break;
+                case WinnerDto.YouWon:
+                    <p>You won!</p>
+                    break;
+                case WinnerDto.OtherPlayerWon:
+                    <p>@Game.OtherName won</p>
+                    break;
+                case WinnerDto.Draw:
+                    <p>It was a draw</p>
+                    break;
+            }
+        </div>
+    </div>
+</a>
+
+@code {
+    [Parameter] public GameDto Game { get; set; }
+}
