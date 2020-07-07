@@ -7,6 +7,7 @@ namespace ScrabbleGame
     public class GamePlayer
     {
         public string Id { get; set; }
+        public string Name { get; set; }
         public string Tiles { get; set; }
         public int Score { get; set; }
 

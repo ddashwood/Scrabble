@@ -240,11 +240,11 @@ namespace ScrabbleWeb.Server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsComplete")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("LastMove")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("NextPlayer")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Player1Id")
                         .IsRequired()

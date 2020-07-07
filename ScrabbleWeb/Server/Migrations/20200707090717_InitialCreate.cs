@@ -59,7 +59,8 @@ namespace ScrabbleWeb.Server.Migrations
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    Name = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -93,7 +94,10 @@ namespace ScrabbleWeb.Server.Migrations
                     Player2Tiles = table.Column<string>(nullable: false),
                     Player1Score = table.Column<int>(nullable: false),
                     Player2Score = table.Column<int>(nullable: false),
-                    Board = table.Column<string>(nullable: false)
+                    Board = table.Column<string>(nullable: false),
+                    LastMove = table.Column<DateTime>(nullable: false),
+                    Winner = table.Column<int>(nullable: false),
+                    NextPlayer = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

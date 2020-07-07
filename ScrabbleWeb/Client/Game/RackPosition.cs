@@ -18,7 +18,7 @@ namespace ScrabbleWeb.Client.Game
 
         public void RemoveTile()
         {
-            game.PlayerTiles[Space] = ' ';
+            game.MyTiles[Space] = ' ';
         }
 
         public Task AddTile(char tile)
@@ -30,13 +30,13 @@ namespace ScrabbleWeb.Client.Game
                 tile = '*';
             }
 
-            game.PlayerTiles[Space] = tile;
+            game.MyTiles[Space] = tile;
             return Task.CompletedTask;
         }
 
         public char GetTile()
         {
-            return game.PlayerTiles[Space];
+            return game.MyTiles[Space];
         }
 
         public override bool Equals(object obj)

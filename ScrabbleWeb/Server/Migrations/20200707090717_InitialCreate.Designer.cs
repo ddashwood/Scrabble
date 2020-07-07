@@ -9,8 +9,8 @@ using ScrabbleWeb.Server.Data;
 namespace ScrabbleWeb.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200706154112_AddFieldsForRecentGamesList")]
-    partial class AddFieldsForRecentGamesList
+    [Migration("20200707090717_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -242,11 +242,11 @@ namespace ScrabbleWeb.Server.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsComplete")
-                        .HasColumnType("INTEGER");
-
                     b.Property<DateTime>("LastMove")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("NextPlayer")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Player1Id")
                         .IsRequired()

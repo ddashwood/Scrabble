@@ -12,17 +12,12 @@ namespace ScrabbleGame
     public class Game : GameBase
     {
         public IWordChecker WordChecker { get; set; }
-        //public string Player1Id { get; private set; }
-        //public string Player2Id { get; private set; }
         public string RemainingTiles { get; private set; }
-        //public string Player1Tiles { get; private set; }
-        //public string Player2Tiles { get; private set; }
-
-        //public int Player1Score { get; private set; }
-        //public int Player2Score { get; private set; }
-
         public GamePlayer Player1 { get; set; } = new GamePlayer();
         public GamePlayer Player2 { get; set; } = new GamePlayer();
+        public DateTime LastMove { get; set; }
+        public Winner Winner { get; set; }
+        public PlayerSelection NextPlayer { get; set; }
 
         public Game()
             : base(new string(' ', BOARD_WIDTH * BOARD_HEIGHT))
@@ -67,6 +62,9 @@ namespace ScrabbleGame
             Player2.Tiles = "BLA*E K";
             Player1.Score = 0;
             Player2.Score = 0;
+            Winner = Winner.NotFinished;
+            NextPlayer = PlayerSelection.Player1;
+            LastMove = DateTime.Now;
         }
     }
 }

@@ -28,7 +28,7 @@ namespace ScrabbleWeb.Server.Controllers
         private readonly UserManager<Player> userManager;
         private readonly IMapper mapper;
 
-        public GameController(ApplicationDbContext context, 
+        public GameController(ApplicationDbContext context,
             IWordCheckerFactory wordCheckerFactory,
             UserManager<Player> userManager,
             IMapper mapper)
@@ -54,6 +54,21 @@ namespace ScrabbleWeb.Server.Controllers
             return game.ToDto();
         }
 
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task Get()
+        {
+            //var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            var userId = "c6d3f1ed-4f5a-43eb-bb63-d241e37ad97a";
+
+            var games = await context.Games
+                .Where(g => g.Player1Id == userId || g.Player2Id == userId)
+                .OrderByDescending(g => g.LastMove)
+                .Take(3)
+                .ToGames(context, mapper)
+                .ToListAsync();
+        }
+
         [HttpPost("{email}")]
         public async Task<ActionResult<NewGameDto>> Post(string email)
         {
@@ -75,9 +90,6 @@ namespace ScrabbleWeb.Server.Controllers
             game.SetupNewGame(userId, other.Id);
 
             GameData gameData = mapper.Map<GameData>(game);
-            gameData.LastMove = DateTime.Now;
-            gameData.IsComplete = false;
-            gameData.Winner = Winner.NotFinished;
 
             context.Games.Add(gameData);
             await context.SaveChangesAsync();

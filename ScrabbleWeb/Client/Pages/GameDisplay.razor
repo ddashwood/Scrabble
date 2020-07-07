@@ -4,8 +4,10 @@
 @using ScrabbleWeb.Client.Game
 @using ScrabbleWeb.Client.Components
 @using System.Linq
+@using AutoMapper
 @inject HttpClient Http
 @inject IModalService Modal
+@inject IMapper mapper
 
 @if (game == null)
 {
@@ -13,7 +15,7 @@
 }
 else
 {
-    <GameMessage BootstrapContext="@messageContext" OpponentName="@game.OtherPlayerName">
+    <GameMessage BootstrapContext="@messageContext" OpponentName="@game.OtherName">
         @message
     </GameMessage>
 
@@ -117,19 +119,19 @@ else
         <div class="game-element-container">
             <div class="player-tiles">
                 <div class="tile-row">
-                    @for (int i = 0; i < game.PlayerTiles.Length; i++)
-                            {
-                                int space = i;
-                                char tile = game.PlayerTiles[space];
-                                ITilePosition position = new RackPosition(game, space);
-                                bool userSpaceEmpty = tile == ' ';
-                                bool thisSelected = position.Equals(tileBeingMoved);
-                                bool clickable = (tileBeingMoved == null) ? !userSpaceEmpty : userSpaceEmpty;
+                    @for (int i = 0; i < game.MyTiles.Length; i++)
+                    {
+                        int space = i;
+                        char tile = game.MyTiles[space];
+                        ITilePosition position = new RackPosition(game, space);
+                        bool userSpaceEmpty = tile == ' ';
+                        bool thisSelected = position.Equals(tileBeingMoved);
+                        bool clickable = (tileBeingMoved == null) ? !userSpaceEmpty : userSpaceEmpty;
 
                         <div class="@($"tile-space{(thisSelected ? " tile-selected" : "")}{(clickable? " clickable": "")}")"
                              @onclick="e => (userSpaceEmpty ? ClickOnEmptySpace(position) : ClickOnMovableTile(position))">
                             @if (!userSpaceEmpty)
-                    {
+                            {
                                 <div class="tile-container">
                                     @* If not a capital letter, it's a blank tile *@
                                     @if (tile >= 'A' && tile <= 'Z')
@@ -166,7 +168,7 @@ else
     private async Task LoadGame()
     {
         var data = await Http.GetFromJsonAsync<GameDto>($"/api/game/{GameId}");
-        game = new Game(data);
+        game = new Game(data, mapper);
     }
 
 
@@ -204,7 +206,7 @@ else
         }
 
         // Success - reload the board (including new tiles)
-        game = new Game(responseData.GameDto);
+        game = new Game(responseData.GameDto, mapper);
         message = "Move completed";
         messageContext = "success";
     }
@@ -267,7 +269,7 @@ else
     private void RemoveBlankToRack(ITilePosition position)
     {
         position.RemoveTile();
-        game.PlayerTiles[Array.IndexOf(game.PlayerTiles, ' ')] = '*';
+        game.MyTiles[Array.IndexOf(game.MyTiles, ' ')] = '*';
     }
 
     private async Task<char> GetBlankTileLetter()
