@@ -167,7 +167,7 @@ else
                 else
                 {
                     <button @onclick=Play disabled="@(!game.MyMove)">Play</button>
-                    <button @onclick=Recall disabled="@(!game.MyMove)">Recall</button>
+                    <button @onclick=Recall>Recall</button>
                 }
             }
             else
@@ -220,6 +220,13 @@ else
 
     private void UpdateMessage()
     {
+        if (!game.MyMove && game.Move.Placements.Count() == 0)
+        {
+            // If it's not my turn, don't show a message saying to play
+            message = "";
+            return;
+        }
+
         int score = game.Move.GetScore(out string error);
         isValidMove = string.IsNullOrEmpty(error);
         if (isValidMove)
@@ -251,6 +258,7 @@ else
         // Then create a new move with no placements in it
         game.Move = new MoveBase(game);
 
+        UpdateMessage();
     }
 
     private async Task Play()
