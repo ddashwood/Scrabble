@@ -8,6 +8,7 @@
 @inject HttpClient Http
 @inject IModalService Modal
 @inject IMapper mapper
+@inject NavigationManager NavigationManager
 
 @if (game == null)
 {
@@ -115,7 +116,7 @@ else
                 }
 
                 @*Not really part of the board, but including it in the board
-                div means it aligns with the board*@
+                    div means it aligns with the board*@
                 <div class="float-left mt-4">Number of tiles remaining: @game.TilesRemaining</div>
             </div>
         </div>
@@ -150,19 +151,35 @@ else
                 </div>
             </div>
         </div>
-        <div class="buttons">
-            <button @onclick=Play>Play</button>
+        <div class="buttons mt-1">
+            @if (game.Winner == WinnerDto.NotFinished)
+            {
+                if (game.Move.Placements.Count() == 0)
+                {
+                    <button onclick="alert('Coming soon!')" disabled="@(!game.MyMove)">Pass</button>
+                    <button onclick="alert('Coming soon!')" disabled="@(!game.MyMove)">Swap</button>
+                }
+                else
+                {
+                    <button @onclick=Play disabled="@(!game.MyMove)">Play</button>
+                    <button @onclick=Recall disabled="@(!game.MyMove)">Recall</button>
+                }
+            }
+            else
+            {
+                <button @onclick=Rematch>Rematch</button>
+            }
         </div>
     </div>
 }
 
 @code {
-    [Parameter] public int GameId { get; set; }
-    Game game;
-    ITilePosition tileBeingMoved;
-    string message;
-    string messageContext;
-    bool isValidMove;
+        [Parameter] public int GameId { get; set; }
+        Game game;
+        ITilePosition tileBeingMoved;
+        string message;
+        string messageContext;
+        bool isValidMove;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -191,6 +208,25 @@ else
             message = error;
             messageContext = "danger";
         }
+    }
+
+    private void Recall()
+    {
+        // Place the tiles back on the rack
+        foreach (var placement in game.Move.Placements)
+        {
+            if (placement.Tile >= 'A' && placement.Tile <= 'Z')
+            {
+                game.MyTiles[Array.IndexOf(game.MyTiles, ' ')] = placement.Tile;
+            }
+            else
+            {
+                game.MyTiles[Array.IndexOf(game.MyTiles, ' ')] = '*';
+            }
+        }
+        // Then create a new move with no placements in it
+        game.Move = new MoveBase(game);
+
     }
 
     private async Task Play()
@@ -296,5 +332,17 @@ else
         {
             return (char)result.Data;
         }
+    }
+
+    private async Task Rematch()
+    {
+        var response = await Http.PostAsync($"/api/game?rematch={GameId}", null);
+        var responseData = await response.Content.ReadFromJsonAsync<NewGameDto>();
+        if (response.StatusCode != System.Net.HttpStatusCode.OK)
+        {
+            throw new ApplicationException("Error " + responseData.Error);
+        }
+
+        NavigationManager.NavigateTo($"/game/{responseData.NewGameId}");
     }
 }

@@ -50,7 +50,6 @@ namespace ScrabbleWeb.Server.Controllers
             return game.ToDto(userId);
         }
 
-        [AllowAnonymous]
         [HttpGet]
         public async Task<GameListDto> Get()
         {
@@ -78,6 +77,19 @@ namespace ScrabbleWeb.Server.Controllers
             };
         }
 
+        [HttpPost]
+        public async Task<ActionResult<NewGameDto>> Post([FromQuery]int rematch)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            GameData game = await context.Games.SingleAsync(g => g.GameId == rematch);
+            if (game.Player1Id != userId && game.Player2Id != userId)
+            {
+                return Forbid();
+            }
+
+            return await CreateGameAsync(game.Player1Id, game.Player2Id);
+        }
+
         [HttpPost("{email}")]
         public async Task<ActionResult<NewGameDto>> Post(string email)
         {
@@ -95,8 +107,13 @@ namespace ScrabbleWeb.Server.Controllers
                 return UnprocessableEntity(new NewGameDto { Error = "Could not find a user with that e-mail address" });
             }
 
+            return await CreateGameAsync(userId, other.Id);
+        }
+
+        private async Task<ActionResult<NewGameDto>> CreateGameAsync(string player1Id, string player2Id)
+        {
             Game game = new Game();
-            game.SetupNewGame(userId, other.Id);
+            game.SetupNewGame(player1Id, player2Id);
 
             GameData gameData = mapper.Map<GameData>(game);
 
