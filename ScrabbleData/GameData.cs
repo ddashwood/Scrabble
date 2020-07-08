@@ -20,6 +20,7 @@ namespace ScrabbleData
         [Required] public DateTime LastMove { get; set; }
         [Required] public Winner Winner { get; set; }
         [Required] public PlayerSelection NextPlayer { get; set; }
+        public string LastMoveDescription { get; set; }
 
     }
 }

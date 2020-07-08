@@ -31,5 +31,6 @@ namespace ScrabbleWeb.Client.Game
         public WinnerDto Winner { get; set; }
         public MoveBase Move { get; set; }
         public int TilesRemaining { get; set; }
+        public string LastMoveDescription { get; set; }
     }
 }

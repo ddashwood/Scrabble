@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using ScrabbleData;
+using System.Linq;
 
 namespace ScrabbleGame
 {
@@ -42,6 +43,7 @@ namespace ScrabbleGame
         {
             if (!thisPlayersMove) throw new InvalidOperationException("Attempt to play when it's not your move");
 
+            var words = FindWords();
             int score = GetScore(out string error);
             if (!string.IsNullOrEmpty(error)) throw new InvalidOperationException(error);
 
@@ -53,6 +55,10 @@ namespace ScrabbleGame
 
             thisPlayer.Score += score;
             Game.UpdateNextPlayerAndResult();
+
+            var maxLength = words.Max(w => w.ToString().Length);
+            var longestWord = words.FirstOrDefault(w => w.ToString().Length == maxLength);
+            Game.LastMoveDescription = $"{thisPlayer.Name} played {longestWord} for {score} points";
         }
 
         public IEnumerable<string> InvalidWords()

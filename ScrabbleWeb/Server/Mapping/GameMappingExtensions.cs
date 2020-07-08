@@ -50,7 +50,8 @@ namespace ScrabbleWeb.Server.Mapping
                     Winner.Draw => WinnerDto.Draw,
                     _ => throw new InvalidOperationException("Winner property invalid")
                 },
-                TilesRemaining = game.RemainingTiles.Length
+                TilesRemaining = game.RemainingTiles.Length,
+                LastMoveDescription = game.LastMoveDescription
             };
         }
 
