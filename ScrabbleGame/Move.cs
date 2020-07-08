@@ -63,7 +63,7 @@ namespace ScrabbleGame
                 var wordText = word.ToString();
                 if (!Game.CheckWord(wordText))
                 {
-                    yield return wordText;
+                    yield return wordText.ToUpper();
                 }
             }
         }

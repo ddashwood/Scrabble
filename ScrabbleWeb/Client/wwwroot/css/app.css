@@ -205,6 +205,8 @@ app {
     justify-content:center;
     align-items:center;
     overflow:hidden;
+    cursor: default;
+    user-select: none;
 }
 
 .tile-space .tile-container {

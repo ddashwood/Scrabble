@@ -126,7 +126,7 @@ else
                         ITilePosition position = new RackPosition(game, space);
                         bool userSpaceEmpty = tile == ' ';
                         bool thisSelected = position.Equals(tileBeingMoved);
-                        bool clickable = (tileBeingMoved == null) ? !userSpaceEmpty : userSpaceEmpty;
+                        bool clickable = (tileBeingMoved == null) ? !userSpaceEmpty : (tileBeingMoved is RackPosition || userSpaceEmpty);
 
                         <div class="@($"tile-space{(thisSelected ? " tile-selected" : "")}{(clickable? " clickable": "")}")"
                              @onclick="e => (userSpaceEmpty ? ClickOnEmptySpace(position) : ClickOnMovableTile(position))">
@@ -236,6 +236,14 @@ else
                         UpdateMessage();
                     }
                 }
+
+                tileBeingMoved = null;
+            }
+            // Also, check if the user is moving tiles around on the rack
+            else if (tileBeingMoved is RackPosition rackPosition1 && position is RackPosition rackPosition2)
+            {
+                (game.MyTiles[rackPosition1.Space], game.MyTiles[rackPosition2.Space]) =
+                    (game.MyTiles[rackPosition2.Space], game.MyTiles[rackPosition1.Space]);
 
                 tileBeingMoved = null;
             }
