@@ -22,7 +22,7 @@ namespace ScrabbleWeb.Server.Data
         }
 
         public DbSet<GameData> Games { get; set; }
-
+        public DbSet<LastMoveTile> LastMoveTiles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -55,6 +55,17 @@ namespace ScrabbleWeb.Server.Data
                 entity.Property(p => p.LastMove).HasColumnType("DATETIME");
 
                 entity.HasCheckConstraint("CK_BOARD_LENGTH", $"LENGTH(Board)={Game.BOARD_WIDTH * Game.BOARD_HEIGHT}");
+            });
+
+            builder.Entity<LastMoveTile>(entity =>
+            {
+                entity
+                    .ToTable("LastMoveTile")
+                    .HasKey(l => new { l.GameId, l.TileId });
+                entity
+                    .HasOne(gd => gd.Game)
+                    .WithMany(g => g.LastMoveTiles)
+                    .HasForeignKey(l => l.GameId);
             });
         }
     }

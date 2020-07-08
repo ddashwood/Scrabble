@@ -4,6 +4,7 @@
     font-family: Open_Sans;
     src: url(/fonts/Open_Sans/OpenSans-Regular.ttf);
 }
+
 @font-face {
     font-family: Open_Sans_Bold;
     src: url(/fonts/Open_Sans/OpenSans-Bold.ttf);
@@ -50,10 +51,10 @@ app {
             margin-left: 1.5rem;
         }
 
-.main .top-row a:first-child {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+        .main .top-row a:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
 .sidebar {
     background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
@@ -138,12 +139,12 @@ app {
     z-index: 1000;
 }
 
-#blazor-error-ui .dismiss {
-    cursor: pointer;
-    position: absolute;
-    right: 0.75rem;
-    top: 0.5rem;
-}
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
 
 @media (max-width: 767.98px) {
     .main .top-row:not(.auth) {
@@ -192,30 +193,34 @@ app {
 }
 
 .tile-row {
-    display:flex !important;
+    display: flex !important;
 }
 
 .tile-space {
-    display:inline-flex;
-    height:1.5rem;
-    width:1.5rem;
-    max-width:1.5rem;
-    border:1px solid black;
-    vertical-align:top;
-    justify-content:center;
-    align-items:center;
-    overflow:hidden;
+    display: inline-flex;
+    height: 1.5rem;
+    width: 1.5rem;
+    max-width: 1.5rem;
+    border: 1px solid black;
+    vertical-align: top;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
     cursor: default;
     user-select: none;
 }
 
-.tile-space .tile-container {
-    background-color: wheat;
-    width: 1.4rem;
-    height: 1.4rem;
-    position: relative;
-    line-height: 1.5rem;
-}
+    .tile-space .tile-container {
+        background-color: wheat;
+        width: 1.4rem;
+        height: 1.4rem;
+        position: relative;
+        line-height: 1.5rem;
+    }
+
+        .tile-space .tile-container.tile-last-move {
+            background-color:darkgoldenrod;
+        }
 
 .tile-container-centre {
     width: 1.5rem;
@@ -227,16 +232,19 @@ app {
 .double-letter .tile-container {
     background-color: paleturquoise;
 }
+
 .tripple-letter .tile-container {
     background-color: blue;
-    color:white;
+    color: white;
 }
+
 .double-word .tile-container {
     background-color: lightpink;
 }
+
 .tripple-word .tile-container {
     background-color: red;
-    color:white;
+    color: white;
 }
 
 .tile-content {
@@ -265,13 +273,13 @@ app {
 }
 
 .tile-container-multiplier2 {
-    top:48%;
-    left:52%
+    top: 48%;
+    left: 52%
 }
 
 .tile-content-score {
-    top:1px;
-    right:1px;
+    top: 1px;
+    right: 1px;
 }
 
 .player-tiles {
@@ -282,9 +290,9 @@ app {
     text-align: center
 }
 
-.game .game-element-container div {
-    display: inline-block;
-}
+    .game .game-element-container div {
+        display: inline-block;
+    }
 
 .message {
     min-height: 7em;
@@ -293,15 +301,15 @@ app {
     display: block;
 }
 
-.message p, .message h3 {
-    text-align: center;
-}
+    .message p, .message h3 {
+        text-align: center;
+    }
 
-.message h3 {
-    margin-top: 1.5rem;
-}
+    .message h3 {
+        margin-top: 1.5rem;
+    }
 
-.tile-container.tile-valid{
+.tile-container.tile-valid {
     color: dodgerblue
 }
 
@@ -323,7 +331,7 @@ app {
 }
 
 .game-card {
-    margin-bottom:1rem;
+    margin-bottom: 1rem;
     transition: 0.3s;
 }
 

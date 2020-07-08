@@ -41,7 +41,7 @@ namespace ScrabbleWeb.Server.Controllers
         public async Task<ActionResult<GameDto>> Get(int id)
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-            Game game = await context.Games.Where(g => g.GameId == id).ToGames(context, mapper).SingleAsync();
+            Game game = await context.Games.Include(g => g.LastMoveTiles).Where(g => g.GameId == id).ToGames(context, mapper).SingleAsync();
             if (game.Player1.Id != userId && game.Player2.Id != userId)
             {
                 return Forbid();

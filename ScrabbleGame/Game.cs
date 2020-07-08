@@ -22,6 +22,8 @@ namespace ScrabbleGame
         public Winner Winner { get; set; }
         public PlayerSelection NextPlayer { get; set; }
         public string LastMoveDescription { get; set; }
+        public List<LastMoveTile> LastMoveTiles { get; internal set; }
+
 
         private static Random random = new Random();
         private static object randLock = new object();

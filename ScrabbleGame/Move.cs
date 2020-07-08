@@ -59,6 +59,19 @@ namespace ScrabbleGame
             var maxLength = words.Max(w => w.ToString().Length);
             var longestWord = words.FirstOrDefault(w => w.ToString().Length == maxLength);
             Game.LastMoveDescription = $"{thisPlayer.Name} played {longestWord} for {score} points";
+
+            Game.LastMove = DateTime.Now;
+            Game.LastMoveTiles = new List<LastMoveTile>();
+            for (int i = 0; i < placements.Count; i++)
+            {
+                Game.LastMoveTiles.Add(new LastMoveTile
+                {
+                    GameId = Game.GameId,
+                    TileId = i,
+                    X = placements[i].X,
+                    Y = placements[i].Y
+                });;
+            }
         }
 
         public IEnumerable<string> InvalidWords()

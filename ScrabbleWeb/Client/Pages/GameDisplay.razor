@@ -74,7 +74,7 @@ else
                                                         Task.CompletedTask)">
                                 @if (tile != ' ')
                                 {
-                                    <div class="tile-container">
+                                    <div class=@($"tile-container{(game.LastMoveTiles.Exists(t => (t.X, t.Y) == (x,y))?" tile-last-move":"")}")>
                                         <div class="tile-content">@tile.ToString().ToUpper()</div>
                                         @*Non-capital means a blank tile, so no score*@
                                         @if (tile >= 'A' && tile <= 'Z')
@@ -172,6 +172,7 @@ else
     private async Task LoadGame()
     {
         var data = await Http.GetFromJsonAsync<GameDto>($"/api/game/{GameId}");
+        int count = data.LastMoveTiles.Count();
         game = new Game(data, mapper);
     }
 

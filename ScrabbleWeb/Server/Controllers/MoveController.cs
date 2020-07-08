@@ -39,7 +39,7 @@ namespace ScrabbleWeb.Server.Controllers
         public async Task<ActionResult<MoveResultDto>> Post(List<TilePlacement> placements, int id)
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
-            GameData gameData = await context.Games.SingleAsync(g => g.GameId == id);
+            GameData gameData = await context.Games.Include(g => g.LastMoveTiles).SingleAsync(g => g.GameId == id);
             if (gameData.Player1Id != userId && gameData.Player2Id != userId)
             {
                 return Forbid();

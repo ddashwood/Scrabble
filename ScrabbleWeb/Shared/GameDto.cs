@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ScrabbleData;
+using System;
+using System.Collections.Generic;
 
 namespace ScrabbleWeb.Shared
 {
@@ -23,5 +25,6 @@ namespace ScrabbleWeb.Shared
         public WinnerDto Winner { get; set; }
         public int TilesRemaining { get; set; }
         public string LastMoveDescription { get; set; }
+        public IEnumerable<LastMoveTileDto> LastMoveTiles { get; set; }
     }
 }

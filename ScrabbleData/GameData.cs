@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace ScrabbleData
@@ -21,6 +23,8 @@ namespace ScrabbleData
         [Required] public Winner Winner { get; set; }
         [Required] public PlayerSelection NextPlayer { get; set; }
         public string LastMoveDescription { get; set; }
+
+        public virtual ICollection<LastMoveTile> LastMoveTiles { get; set; }
 
     }
 }

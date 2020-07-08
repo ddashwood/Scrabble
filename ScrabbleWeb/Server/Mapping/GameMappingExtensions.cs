@@ -51,7 +51,8 @@ namespace ScrabbleWeb.Server.Mapping
                     _ => throw new InvalidOperationException("Winner property invalid")
                 },
                 TilesRemaining = game.RemainingTiles.Length,
-                LastMoveDescription = game.LastMoveDescription
+                LastMoveDescription = game.LastMoveDescription,
+                LastMoveTiles = game.LastMoveTiles.Select(t => new LastMoveTileDto { X = t.X, Y = t.Y })
             };
         }
 
