@@ -257,6 +257,7 @@ else
         }
         // Then create a new move with no placements in it
         game.Move = new MoveBase(game);
+        tileBeingMoved = null;
 
         UpdateMessage();
     }
@@ -269,19 +270,25 @@ else
         {
             message = responseData.Error;
             messageContext = "danger";
-            return;
         }
         else if (response.StatusCode != System.Net.HttpStatusCode.OK)
         {
             message = "Something went wrong";
             messageContext = "danger";
-            return;
         }
-
-        // Success - reload the board (including new tiles)
-        game = new Game(responseData.GameDto, mapper);
-        message = "Move completed";
-        messageContext = "success";
+        else
+        {
+            // Success - reload the board (including new tiles)
+            game = new Game(responseData.GameDto, mapper);
+            message = "Move completed";
+            messageContext = "success";
+        }
+        // If the contents of the message box have changed, this can result in the board
+        // scrolling off the screen. Here, we ensure that the board stays in the same
+        // position
+        await JSRuntime.InvokeVoidAsync("scrollPreventer.saveTop", "game");
+        StateHasChanged();
+        await JSRuntime.InvokeVoidAsync("scrollPreventer.restoreTop", "game");
     }
 
     private async Task ClickOnMovableTile(ITilePosition position)
