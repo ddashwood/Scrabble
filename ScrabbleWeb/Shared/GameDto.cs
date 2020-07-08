@@ -21,5 +21,6 @@ namespace ScrabbleWeb.Shared
         public string OtherName { get; set; }
         public DateTime LastMove { get; set; }
         public WinnerDto Winner { get; set; }
+        public int TilesRemaining { get; set; }
     }
 }

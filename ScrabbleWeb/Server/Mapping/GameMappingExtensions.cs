@@ -49,7 +49,8 @@ namespace ScrabbleWeb.Server.Mapping
                     Winner.Player2 => thisPlayerSelection == PlayerSelection.Player2 ? WinnerDto.YouWon : WinnerDto.OtherPlayerWon,
                     Winner.Draw => WinnerDto.Draw,
                     _ => throw new InvalidOperationException("Winner property invalid")
-                }
+                },
+                TilesRemaining = game.RemainingTiles.Length
             };
         }
 
