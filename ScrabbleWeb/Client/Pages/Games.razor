@@ -1,6 +1,7 @@
 ﻿@page "/games"
 @using ScrabbleWeb.Client.Components
 @using ScrabbleWeb.Shared
+@using Microsoft.AspNetCore.SignalR.Client
 
 @inject HttpClient Http
 @inject IModalService Modal
@@ -54,9 +55,33 @@
 
 @code {
     private GameListDto games;
+    private HubConnection hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/movehub"))
+            .Build();
+
+        hubConnection.On<string, int>("ReceiveMove", async (userId, gameId) =>
+        {
+            if (games?.MyUserId == userId)
+            {
+                await LoadGameList();
+                StateHasChanged();
+            }
+        });
+
+        await hubConnection.StartAsync();
+    }
 
     protected override async Task OnParametersSetAsync()
     {
+        await LoadGameList();
+    }
+
+    private async Task LoadGameList()
+    { 
         games = await Http.GetFromJsonAsync<GameListDto>($"/api/game");
     }
 

@@ -14,6 +14,7 @@ namespace ScrabbleWeb.Shared
     public class GameDto
     {
         public int GameId { get; set; }
+        public string MyUserId { get; set; }
         public string MyTiles { get; set; }
         public bool MyMove { get; set; }
         public int MyScore { get; set; }

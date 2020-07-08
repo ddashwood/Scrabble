@@ -1,10 +1,13 @@
 ﻿@page "/game/{gameId:int}"
+
 @using ScrabbleMoveChecker
 @using ScrabbleWeb.Shared
 @using ScrabbleWeb.Client.Game
 @using ScrabbleWeb.Client.Components
 @using System.Linq
 @using AutoMapper
+@using Microsoft.AspNetCore.SignalR.Client
+
 @inject HttpClient Http
 @inject IModalService Modal
 @inject IMapper mapper
@@ -174,12 +177,31 @@ else
 }
 
 @code {
-        [Parameter] public int GameId { get; set; }
-        Game game;
-        ITilePosition tileBeingMoved;
-        string message;
-        string messageContext;
-        bool isValidMove;
+    [Parameter] public int GameId { get; set; }
+    Game game;
+    ITilePosition tileBeingMoved;
+    string message;
+    string messageContext;
+    bool isValidMove;
+    private HubConnection hubConnection;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/movehub"))
+            .Build();
+
+        hubConnection.On<string, int>("ReceiveMove", async (userId, gameId) =>
+        {
+            if (game.MyUserId == userId && gameId == GameId)
+            {
+                await LoadGame();
+                StateHasChanged();
+            }
+        });
+
+        await hubConnection.StartAsync();
+    }
 
     protected override async Task OnParametersSetAsync()
     {

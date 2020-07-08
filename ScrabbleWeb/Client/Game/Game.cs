@@ -19,6 +19,7 @@ namespace ScrabbleWeb.Client.Game
             Move = new MoveBase(this);
         }
 
+        public string MyUserId { get; set; }
         public int GameId { get; set; }
         public char[] MyTiles { get; set; }
         public bool MyMove { get; set; }

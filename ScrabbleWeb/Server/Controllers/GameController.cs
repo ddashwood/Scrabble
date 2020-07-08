@@ -72,6 +72,7 @@ namespace ScrabbleWeb.Server.Controllers
 
             return new GameListDto
             {
+                MyUserId = userId,
                 ActiveGames = activeGames.Select(g => g.ToDto(userId)),
                 RecentGames = recentGames.Select(g => g.ToDto(userId))
             };

@@ -21,6 +21,7 @@ using IdentityServer4.Services;
 using IdentityServer4.Models;
 using ScrabbleWeb.Server.Identity;
 using AutoMapper;
+using ScrabbleWeb.Server.Hubs;
 
 namespace ScrabbleWeb.Server
 {
@@ -40,6 +41,8 @@ namespace ScrabbleWeb.Server
             services.AddSingleton<IWordCheckerFactory, WordCheckerFactory>();
 
             services.AddAutoMapper(typeof(Startup));
+
+            services.AddSignalR();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(
@@ -61,11 +64,19 @@ namespace ScrabbleWeb.Server
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddResponseCompression(opts =>
+            {
+                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+                    new[] { "application/octet-stream" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseResponseCompression();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -93,6 +104,7 @@ namespace ScrabbleWeb.Server
             {
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
+                endpoints.MapHub<MoveHub>("/movehub");
                 endpoints.MapFallbackToFile("index.html");
             });
         }

@@ -33,6 +33,7 @@ namespace ScrabbleWeb.Server.Mapping
             (thisPlayer, otherPlayer) = thisPlayerSelection == PlayerSelection.Player1 ? (game.Player1, game.Player2) : (game.Player2, game.Player1);
             return new GameDto
             {
+                MyUserId = userId,
                 GameId = game.GameId,
                 MyTiles = thisPlayer.Tiles,
                 MyMove = game.NextPlayer == thisPlayerSelection,

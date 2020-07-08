@@ -6,11 +6,13 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ScrabbleData;
 using ScrabbleGame;
 using ScrabbleMoveChecker;
 using ScrabbleWeb.Server.Data;
+using ScrabbleWeb.Server.Hubs;
 using ScrabbleWeb.Server.Mapping;
 using ScrabbleWeb.Shared;
 
@@ -25,14 +27,17 @@ namespace ScrabbleWeb.Server.Controllers
         private readonly ApplicationDbContext context;
         private readonly IWordCheckerFactory wordCheckerFactory;
         private readonly IMapper mapper;
+        private readonly IHubContext<MoveHub> hubContext;
 
         public MoveController(ApplicationDbContext context,
             IWordCheckerFactory wordCheckerFactory,
-            IMapper mapper)
+            IMapper mapper,
+            IHubContext<MoveHub> hubContext)
         {
             this.context = context;
             this.wordCheckerFactory = wordCheckerFactory;
             this.mapper = mapper;
+            this.hubContext = hubContext;
         }
 
         [HttpPost("{id}")]
@@ -74,6 +79,8 @@ namespace ScrabbleWeb.Server.Controllers
             mapper.Map(game, gameData);
 
             await context.SaveChangesAsync();
+            var otherUser = gameData.Player1Id == userId ? gameData.Player2Id : gameData.Player1Id;
+            await hubContext.Clients.All.SendAsync("ReceiveMove", otherUser, id);
 
             return Ok(new MoveResultDto(game.ToDto(userId)));
         }
