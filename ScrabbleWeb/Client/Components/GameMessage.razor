@@ -1,9 +1,16 @@
 ﻿@using ScrabbleWeb.Client.Game
 
     <div class="message">
-        <h3>
+        <h3 class="mb-3">
             Your game with @Game.OtherName
         </h3>
+
+        @if (Game.Winner != ScrabbleWeb.Shared.WinnerDto.NotFinished || Game.MyMove)
+        {
+            // If other player has just played, or if this game has finished
+            <p>@Game.LastMoveDescription</p>
+        }
+
         <p class="@($"text-{BootstrapContext}")">
             @ChildContent
         </p>
@@ -25,12 +32,6 @@
             case ScrabbleWeb.Shared.WinnerDto.Draw:
                 <p class="text-primary">The game ended in a draw</p>
                 break;
-        }
-
-        @if (Game.Winner != ScrabbleWeb.Shared.WinnerDto.NotFinished || Game.MyMove)
-        {
-            // If other player has just played, or if this game has finished
-            <p>@Game.LastMoveDescription</p>
         }
 
         <div class="d-flex justify-content-between">
