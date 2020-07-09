@@ -58,7 +58,7 @@ namespace ScrabbleGame
 
             var maxLength = words.Max(w => w.ToString().Length);
             var longestWord = words.FirstOrDefault(w => w.ToString().Length == maxLength);
-            Game.LastMoveDescription = $"{thisPlayer.Name} played {longestWord} for {score} points";
+            Game.LastMoveDescription = $"{thisPlayer.Name} played {longestWord.ToString().ToUpper()} for {score} points";
 
             Game.LastMove = DateTime.Now;
             Game.LastMoveTiles = new List<LastMoveTile>();
