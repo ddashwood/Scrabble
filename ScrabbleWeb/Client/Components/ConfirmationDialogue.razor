@@ -1,0 +1,20 @@
+﻿<div class="container">
+    <div class="d-flex">
+        <button class="btn btn-danger ml-auto mr-1" @onclick="Yes">Yes</button>
+        <button class="btn btn-primary mr-auto ml-1" @onclick="No">No</button>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter] BlazoredModalInstance BlazoredModal { get; set; }
+
+    private void Yes()
+    {
+        BlazoredModal.Close();
+    }
+
+    private void No()
+    {
+        BlazoredModal.Close(ModalResult.Cancel());
+    }
+}

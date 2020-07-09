@@ -95,6 +95,27 @@ namespace ScrabbleGame
             }
         }
 
+        public void Resign(string userId)
+        {
+            if (userId == Player1.Id && Winner == Winner.NotFinished)
+            {
+                Winner = Winner.Player2;
+                LastMoveDescription = $"{Player1.Name} resigned";
+            }
+            else if (userId == Player2.Id && Winner == Winner.NotFinished)
+            {
+                Winner = Winner.Player1;
+                LastMoveDescription = $"{Player2.Name} resigned";
+            }
+            else
+            {
+                throw new InvalidOperationException("User supplied is not participating in this game");
+            }
+
+            NextPlayer = PlayerSelection.N_A;
+            LastMove = DateTime.Now;
+        }
+
         // We need to "hide" the indexer from the base class in order to
         // leave the getter unchanged (pass through to base), but add
         // a new setter where there wasn't one at all in the base class
@@ -125,33 +146,33 @@ namespace ScrabbleGame
             Player2.Id = player2;
             Board = new string(' ', BOARD_WIDTH * BOARD_HEIGHT);
             RemainingTiles = string.Join("",
-                    new string ('A', 9),
-                    new string ('B', 2),
-                    new string ('C', 2),
-                    new string ('D', 4),
-                    new string ('E', 12),
-                    new string ('F', 2),
-                    new string ('G', 3),
-                    new string ('H', 2),
-                    new string ('I', 9),
-                    new string ('J', 1),
-                    new string ('K', 1),
-                    new string ('L', 4),
-                    new string ('M', 2),
-                    new string ('N', 6),
-                    new string ('O', 8),
-                    new string ('P', 2),
-                    new string ('Q', 1),
-                    new string ('R', 6),
-                    new string ('S', 4),
-                    new string ('T', 6),
-                    new string ('U', 4),
-                    new string ('V', 2),
-                    new string ('W', 2),
-                    new string ('X', 1),
-                    new string ('Y', 2),
-                    new string ('Z', 1),
-                    new string ('*', 2)
+                    new string('A', 9),
+                    new string('B', 2),
+                    new string('C', 2),
+                    new string('D', 4),
+                    new string('E', 12),
+                    new string('F', 2),
+                    new string('G', 3),
+                    new string('H', 2),
+                    new string('I', 9),
+                    new string('J', 1),
+                    new string('K', 1),
+                    new string('L', 4),
+                    new string('M', 2),
+                    new string('N', 6),
+                    new string('O', 8),
+                    new string('P', 2),
+                    new string('Q', 1),
+                    new string('R', 6),
+                    new string('S', 4),
+                    new string('T', 6),
+                    new string('U', 4),
+                    new string('V', 2),
+                    new string('W', 2),
+                    new string('X', 1),
+                    new string('Y', 2),
+                    new string('Z', 1),
+                    new string('*', 2)
                 );
             StringBuilder player1tiles = new StringBuilder();
             StringBuilder player2tiles = new StringBuilder();
@@ -165,7 +186,7 @@ namespace ScrabbleGame
             Player1.Score = 0;
             Player2.Score = 0;
             Winner = Winner.NotFinished;
-            lock(randLock) // Must lock , because random iss static, and therefore shared between threads
+            lock (randLock) // Must lock , because random iss static, and therefore shared between threads
             {
                 NextPlayer = (PlayerSelection)random.Next(2);
             }
@@ -181,7 +202,7 @@ namespace ScrabbleGame
             }
 
             int position;
-            lock(randLock) // Must lock , because random iss static, and therefore shared between threads
+            lock (randLock) // Must lock , because random iss static, and therefore shared between threads
             {
                 position = random.Next(RemainingTiles.Length);
             }

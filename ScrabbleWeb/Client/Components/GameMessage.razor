@@ -27,7 +27,7 @@
                 break;
         }
 
-        @if (Game.Winner == ScrabbleWeb.Shared.WinnerDto.NotFinished && Game.MyMove)
+        @if (!(Game.Winner == ScrabbleWeb.Shared.WinnerDto.NotFinished && Game.MyMove))
         {
             // If other player has just played
             <p>@Game.LastMoveDescription</p>
