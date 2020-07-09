@@ -1,9 +1,54 @@
 ﻿@page "/stats"
+@using ScrabbleWeb.Shared
+@inject HttpClient Http
 
 <h3>Statistics</h3>
 
-<p>Coming soon!</p>
+@if (data == null)
+{
+    <p>Loading statistics</p>
+}
+else
+{
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Grand Total</h4>
+        </div>
+        <div class="card-body">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-4">Wins: @data.Wins</div>
+                    <div class="col-md-4 text-md-center">Draws: @data.Draws</div>
+                    <div class="col-md-4 text-md-right">Losses: @(data.Count - data.Wins - data.Draws)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @foreach (var opponent in data.StatsPerOpponent)
+    {
+        <div class="card ml-4 mb-2">
+            <div class="card-header">
+                <h5>Against @opponent.Opponent</h5>
+            </div>
+            <div class="card-body">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-4">Wins: @opponent.Wins</div>
+                        <div class="col-md-4 text-md-center">Draws: @opponent.Draws</div>
+                        <div class="col-md-4 text-md-right">Losses: @(opponent.Count - opponent.Wins - opponent.Draws)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
 
 @code {
+    StatsDto data;
 
+    protected override async Task OnParametersSetAsync()
+    {
+        data = await Http.GetFromJsonAsync<StatsDto>($"/api/stats");
+    }
 }
