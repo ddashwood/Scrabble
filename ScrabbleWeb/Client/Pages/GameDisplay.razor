@@ -179,6 +179,7 @@ else
 }
 
 @code {
+    private static Func<Task> refreshAction;
     [Parameter] public int GameId { get; set; }
     Game game;
     ITilePosition tileBeingMoved;
@@ -189,28 +190,16 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        hubConnection = new HubConnectionBuilder()
-            .WithUrl(NavigationManager.ToAbsoluteUri("/movehub"))
-            .Build();
-
-        hubConnection.On<string, int>("ReceiveMove", async (userId, gameId) =>
-        {
-            if (game.MyUserId == userId && gameId == GameId)
-            {
-                await LoadGame();
-                StateHasChanged();
-            }
-        });
-
-        await hubConnection.StartAsync();
+        await SetupHub();
+        refreshAction = RefreshActionAsync;
     }
 
     protected override async Task OnParametersSetAsync()
     {
-        await LoadGame();
+        await LoadGameAsync();
     }
 
-    private async Task LoadGame()
+    private async Task LoadGameAsync()
     {
         var data = await Http.GetFromJsonAsync<GameDto>($"/api/game/{GameId}");
         int count = data.LastMoveTiles.Count();
@@ -220,9 +209,10 @@ else
 
     private void UpdateMessage()
     {
-        if (!game.MyMove && game.Move.Placements.Count() == 0)
+        if (game.Move.Placements.Count() == 0)
         {
-            // If it's not my turn, don't show a message saying to play
+            // If there are no tiles placed, ignore any messages from the server
+            // and remove any previous messages
             message = "";
             return;
         }
@@ -388,5 +378,55 @@ else
         }
 
         NavigationManager.NavigateTo($"/game/{responseData.NewGameId}");
+    }
+
+    [JSInvokable]
+    public static async Task RefreshConnectionAsync()
+    {
+        if (refreshAction != null)
+        {
+            await (refreshAction?.Invoke());
+        }
+    }
+
+    private async Task RefreshActionAsync()
+    {
+        if (hubConnection == null)
+        {
+            return;
+        }
+
+        //if (hubConnection.State == HubConnectionState.Connected || hubConnection.State == HubConnectionState.Connecting)
+        //{
+        //    await JSRuntime.InvokeVoidAsync("alert", "Still connected");
+        //    isRefreshing = false;
+        //    return;
+        //}
+
+        // On mobiles, the hub can disconnect when the browser is closed. This will re-start it.
+        await hubConnection.StopAsync();
+        await LoadGameAsync();
+        UpdateMessage();
+        StateHasChanged();
+        await SetupHub();
+    }
+
+    private async Task SetupHub()
+    {
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/movehub"))
+            .Build();
+
+        hubConnection.On<string, int>("ReceiveMove", async (userId, gameId) =>
+        {
+            if (game.MyUserId == userId && gameId == GameId)
+            {
+                await LoadGameAsync();
+                UpdateMessage();
+                StateHasChanged();
+            }
+        });
+
+        await hubConnection.StartAsync();
     }
 }

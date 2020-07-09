@@ -81,7 +81,7 @@
     }
 
     private async Task LoadGameList()
-    { 
+    {
         games = await Http.GetFromJsonAsync<GameListDto>($"/api/game");
     }
 
