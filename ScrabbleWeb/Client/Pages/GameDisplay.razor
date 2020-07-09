@@ -161,7 +161,7 @@ else
             {
                 if (game.Move.Placements.Count() == 0)
                 {
-                    <button onclick="alert('Coming soon!')" disabled="@(!game.MyMove)">Pass</button>
+                    <button @onclick=Pass disabled="@(!game.MyMove)">Pass</button>
                     <button onclick="alert('Coming soon!')" disabled="@(!game.MyMove)">Swap</button>
                 }
                 else
@@ -280,6 +280,38 @@ else
         await JSRuntime.InvokeVoidAsync("scrollPreventer.saveTop", "game");
         StateHasChanged();
         await JSRuntime.InvokeVoidAsync("scrollPreventer.restoreTop", "game");
+    }
+
+    private async Task Pass()
+    {
+        var result = await Modal.Show<ConfirmationDialogue>("Are you sure you want to pass?").Result;
+        if (!result.Cancelled)
+        {
+            var response = await Http.PostAsync($"/api/pass/{GameId}", null);
+            var responseData = await response.Content.ReadFromJsonAsync<MoveResultDto>();
+            if (response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
+            {
+                message = responseData.Error;
+                messageContext = "danger";
+            }
+            else if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                message = "Something went wrong";
+                messageContext = "danger";
+            }
+            else
+            {
+                // Success - reload the board
+                game = new Game(responseData.GameDto, mapper);
+                UpdateMessage();
+            }
+            // If the contents of the message box have changed, this can result in the board
+            // scrolling off the screen. Here, we ensure that the board stays in the same
+            // position
+            await JSRuntime.InvokeVoidAsync("scrollPreventer.saveTop", "game");
+            StateHasChanged();
+            await JSRuntime.InvokeVoidAsync("scrollPreventer.restoreTop", "game");
+        }
     }
 
     private async Task Resign()

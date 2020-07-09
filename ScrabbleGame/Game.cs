@@ -116,6 +116,26 @@ namespace ScrabbleGame
             LastMove = DateTime.Now;
         }
 
+        public void Pass(string userId)
+        {
+            if (Player1.Id == userId && NextPlayer == PlayerSelection.Player1)
+            {
+                NextPlayer = PlayerSelection.Player2;
+                LastMoveDescription = $"{Player1.Name} passed";
+            }
+            else if (Player2.Id == userId && NextPlayer == PlayerSelection.Player2)
+            {
+                NextPlayer = PlayerSelection.Player1;
+                LastMoveDescription = $"{Player2.Name} passed";
+            }
+            else
+            {
+                throw new InvalidOperationException("Can't pass if it's not your move");
+            }
+
+            LastMove = DateTime.Now;
+        }
+
         // We need to "hide" the indexer from the base class in order to
         // leave the getter unchanged (pass through to base), but add
         // a new setter where there wasn't one at all in the base class
