@@ -37,7 +37,10 @@ namespace ScrabbleGame
         // Used for testing
         internal Move(Game game, List<TilePlacement> placements)
             : base(game, placements)
-        { }
+        {
+            thisPlayer = game.Player1;
+            thisPlayersMove = true;
+        }
 
         public void Play()
         {
@@ -70,7 +73,7 @@ namespace ScrabbleGame
                     TileId = i,
                     X = placements[i].X,
                     Y = placements[i].Y
-                });;
+                }); ;
             }
         }
 

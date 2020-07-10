@@ -12,7 +12,10 @@ namespace ScrabbleGameTests
         [Fact]
         public void PlayMoveTest()
         {
-            Game game = GetGameWithEmptyBoard();
+            Game game = new Game();
+            game.SetupNewGame("abc", "def");
+            game.Player1.Tiles = "TESTABC";
+            game.NextPlayer = ScrabbleData.PlayerSelection.Player1;
             Move move1 = new Move(game, new List<TilePlacement>
             {
                 new TilePlacement(6, 7, 'T'),

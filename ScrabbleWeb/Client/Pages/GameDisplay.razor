@@ -110,7 +110,30 @@ else
 
     private async Task Play()
     {
-        var response = await Http.PostAsJsonAsync($"/api/move/{GameId}", gameVm.Game.Move.Placements);
+        await Submit($"/api/move/{GameId}", gameVm.Game.Move.Placements, "Move completed");
+    }
+
+    private async Task Pass()
+    {
+        var result = await Modal.Show<ConfirmationDialogue>("Are you sure you want to pass?").Result;
+        if (!result.Cancelled)
+        {
+            await Submit<object>($"/api/pass/{GameId}", null, null);
+        }
+    }
+
+    private async Task Resign()
+    {
+        var result = await Modal.Show<ConfirmationDialogue>("Are you sure you want to resign?").Result;
+        if (!result.Cancelled)
+        {
+            await Submit<object>($"/api/resign/{GameId}", null, null);
+        }
+    }
+
+    private async Task Submit<T>(string requestUri, T value, string successMessage)
+    {
+        var response = await Http.PostAsJsonAsync(requestUri, value);
         var responseData = await response.Content.ReadFromJsonAsync<MoveResultDto>();
         if (response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
         {
@@ -127,8 +150,15 @@ else
             // Success - reload the board (including new tiles)
             var game = new Game(responseData.GameDto, mapper);
             gameVm = new GameViewModel(game, GetBlankTileLetter, StateHasChanged, JSRuntime);
-            gameVm.Message = "Move completed";
-            gameVm.MessageBootstrapContext = "success";
+            if (successMessage == null)
+            {
+                gameVm.UpdateMessage();
+            }
+            else
+            {
+                gameVm.Message = successMessage;
+                gameVm.MessageBootstrapContext = "success";
+            }
         }
         // If the contents of the message box have changed, this can result in the board
         // scrolling off the screen. Here, we ensure that the board stays in the same
@@ -136,72 +166,7 @@ else
         await JSRuntime.InvokeVoidAsync("scrollPreventer.saveTop", "game");
         StateHasChanged();
         await JSRuntime.InvokeVoidAsync("scrollPreventer.restoreTop", "game");
-    }
 
-    private async Task Pass()
-    {
-        var result = await Modal.Show<ConfirmationDialogue>("Are you sure you want to pass?").Result;
-        if (!result.Cancelled)
-        {
-            var response = await Http.PostAsync($"/api/pass/{GameId}", null);
-            var responseData = await response.Content.ReadFromJsonAsync<MoveResultDto>();
-            if (response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
-            {
-                gameVm.Message = responseData.Error;
-                gameVm.MessageBootstrapContext = "danger";
-            }
-            else if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                gameVm.Message = "Something went wrong";
-                gameVm.MessageBootstrapContext = "danger";
-            }
-            else
-            {
-                // Success - reload the board
-                var game = new Game(responseData.GameDto, mapper);
-                gameVm = new GameViewModel(game, GetBlankTileLetter, StateHasChanged, JSRuntime);
-                gameVm.UpdateMessage();
-            }
-            // If the contents of the message box have changed, this can result in the board
-            // scrolling off the screen. Here, we ensure that the board stays in the same
-            // position
-            await JSRuntime.InvokeVoidAsync("scrollPreventer.saveTop", "game");
-            StateHasChanged();
-            await JSRuntime.InvokeVoidAsync("scrollPreventer.restoreTop", "game");
-        }
-    }
-
-    private async Task Resign()
-    {
-        var result = await Modal.Show<ConfirmationDialogue>("Are you sure you want to resign?").Result;
-        if (!result.Cancelled)
-        {
-            var response = await Http.PostAsync($"/api/resign/{GameId}", null);
-            var responseData = await response.Content.ReadFromJsonAsync<MoveResultDto>();
-            if (response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
-            {
-                gameVm.Message = responseData.Error;
-                gameVm.MessageBootstrapContext = "danger";
-            }
-            else if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                gameVm.Message = "Something went wrong";
-                gameVm.MessageBootstrapContext = "danger";
-            }
-            else
-            {
-                // Success - reload the board
-                var game = new Game(responseData.GameDto, mapper);
-                gameVm = new GameViewModel(game, GetBlankTileLetter, StateHasChanged, JSRuntime);
-                gameVm.UpdateMessage();
-            }
-            // If the contents of the message box have changed, this can result in the board
-            // scrolling off the screen. Here, we ensure that the board stays in the same
-            // position
-            await JSRuntime.InvokeVoidAsync("scrollPreventer.saveTop", "game");
-            StateHasChanged();
-            await JSRuntime.InvokeVoidAsync("scrollPreventer.restoreTop", "game");
-        }
     }
 
     // Passed to the GameViewModel, which uses it to prompt user for a letter for a blank tile
