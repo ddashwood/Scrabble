@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrabbleWeb.Server", "Scrab
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrabbleWeb.Client", "ScrabbleWeb\Client\ScrabbleWeb.Client.csproj", "{9F21C0A5-257F-4491-BB8A-208606A98D19}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrabbleMoveChecker", "ScrabbleMoveChecker\ScrabbleMoveChecker.csproj", "{F1A239A7-A831-4829-9B3E-38992BC57004}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrabbleBase", "ScrabbleBase\ScrabbleBase.csproj", "{F1A239A7-A831-4829-9B3E-38992BC57004}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ScrabbleWeb.Shared", "ScrabbleWeb\Shared\ScrabbleWeb.Shared.csproj", "{06B57C3B-9429-4BAF-A79D-98A35ED9D9D9}"
 EndProject

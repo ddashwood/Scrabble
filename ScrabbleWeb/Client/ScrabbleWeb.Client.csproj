@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ScrabbleMoveChecker\ScrabbleMoveChecker.csproj" />
+    <ProjectReference Include="..\..\ScrabbleBase\ScrabbleBase.csproj" />
     <ProjectReference Include="..\Shared\ScrabbleWeb.Shared.csproj" />
   </ItemGroup>
 

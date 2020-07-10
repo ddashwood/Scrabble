@@ -1,5 +1,5 @@
 ﻿using ScrabbleData;
-using ScrabbleMoveChecker;
+using ScrabbleBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;

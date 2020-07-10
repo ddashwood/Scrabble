@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using ScrabbleData;
-using ScrabbleMoveChecker;
+using ScrabbleBase;
 using ScrabbleWeb.Shared;
 using System;
 using System.Collections.Generic;

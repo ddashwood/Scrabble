@@ -4,11 +4,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
-using static ScrabbleMoveChecker.Multiplier;
+using static ScrabbleBase.Multiplier;
 
 [assembly:InternalsVisibleTo("ScrabbleGameTests")]
 
-namespace ScrabbleMoveChecker
+namespace ScrabbleBase
 {
     /// <summary>
     /// Represents a Scrabble game. When referring to a square on the board,

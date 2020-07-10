@@ -1,4 +1,4 @@
-﻿using ScrabbleMoveChecker;
+﻿using ScrabbleBase;
 using ScrabbleWeb.Client.Models;
 using System;
 using System.Collections.Generic;

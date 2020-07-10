@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ScrabbleData;
 using ScrabbleGame;
-using ScrabbleMoveChecker;
+using ScrabbleBase;
 using ScrabbleWeb.Server.Data;
 using ScrabbleWeb.Server.Mapping;
 using ScrabbleWeb.Shared;

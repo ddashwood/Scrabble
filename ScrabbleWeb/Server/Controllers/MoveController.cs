@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using ScrabbleData;
 using ScrabbleGame;
-using ScrabbleMoveChecker;
+using ScrabbleBase;
 using ScrabbleWeb.Server.Data;
 using ScrabbleWeb.Server.Hubs;
 using ScrabbleWeb.Server.Mapping;

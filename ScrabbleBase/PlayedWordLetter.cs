@@ -1,4 +1,4 @@
-﻿namespace ScrabbleMoveChecker
+﻿namespace ScrabbleBase
 {
     public  class PlayedWordLetter
     {
