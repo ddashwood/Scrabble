@@ -1,6 +1,7 @@
 ﻿@page "/game/{gameId:int}"
 
 @using System.Linq
+@using System.Text
 
 @inject HttpClient Http
 @inject IModalService Modal
@@ -28,14 +29,18 @@ else
                         @for (int x = 0; x < GameBase.BOARD_WIDTH; x++)
                         {
                             var tileVm = gameVm.GetBoardTile(x, y);
-                            <TileSpace TileVm=tileVm OnClick=tileVm.OnClick/>
+                            <TileSpace TileVm=tileVm OnClick=tileVm.OnClick />
                         }
                     </div>
                 }
 
                 @*Not really part of the board, but including it in the board
                     div means it aligns with the board*@
-                <div class="float-left mt-4">Number of tiles remaining: @gameVm.Game.TilesRemaining</div>
+                <div class="float-left mt-4">Tiles remaining: @gameVm.Game.TilesRemaining</div>
+                @if (gameVm.IsSwapping)
+                {
+                    <div class="float-right mt-4">Select tiles to swap</div>
+                }
             </div>
         </div>
 
@@ -54,10 +59,16 @@ else
         <div class="buttons mt-4 mb-2">
             @if (gameVm.Game.Winner == WinnerDto.NotFinished)
             {
-                if (gameVm.Game.Move.Placements.Count() == 0)
+                if (gameVm.IsSwapping)
+                {
+                    <button @onclick=StopSwap>Cancel</button>
+                    <button @onclick=DoSwap disabled="@(!gameVm.SwappingTiles.Any(t => t))">Swap</button>
+
+                }
+                else if (gameVm.Game.Move.Placements.Count() == 0)
                 {
                     <button @onclick=Pass disabled="@(!gameVm.Game.MyMove)">Pass</button>
-                    <button onclick="alert('Coming soon!')" disabled="@(!gameVm.Game.MyMove)">Swap</button>
+                    <button @onclick=StartSwap disabled="@(!gameVm.Game.MyMove || !gameVm.CanSwap)">Swap</button>
                 }
                 else
                 {
@@ -106,6 +117,30 @@ else
         gameVm.TileBeingMoved = null;
 
         gameVm.UpdateMessage();
+    }
+
+    private void StartSwap()
+    {
+        gameVm.TileBeingMoved = null;
+        gameVm.StartSwapping();
+    }
+
+    private void StopSwap()
+    {
+        gameVm.StopSwapping();
+    }
+
+    private async Task DoSwap()
+    {
+        StringBuilder swapTiles = new StringBuilder();
+        for (int i = 0; i < gameVm.SwappingTiles.Length; i++)
+        {
+            if (gameVm.SwappingTiles[i])
+            {
+                swapTiles.Append(gameVm.Game.MyTiles[i]);
+            }
+        }
+        await Submit($"/api/swap/{GameId}", swapTiles.ToString(), "Swap completed");
     }
 
     private async Task Play()

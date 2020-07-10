@@ -136,6 +136,48 @@ namespace ScrabbleGame
             LastMove = DateTime.Now;
         }
 
+        public void Swap(string userId, string tiles)
+        {
+            if (tiles.Length > RemainingTiles.Length)
+            {
+                throw new InvalidOperationException("Attempt to swap more tiles than there are in the tile bag");
+            }
+
+            GamePlayer player;
+            if (Player1.Id == userId && NextPlayer == PlayerSelection.Player1)
+            {
+                NextPlayer = PlayerSelection.Player2;
+                player = Player1;
+            }
+            else if (Player2.Id == userId && NextPlayer == PlayerSelection.Player2)
+            {
+                NextPlayer = PlayerSelection.Player1;
+                player = Player2;
+            }
+            else
+            {
+                throw new InvalidOperationException("Can't swap if it's not your move");
+            }
+
+            var rack = player.Tiles.ToCharArray();
+            foreach (char tile in tiles)
+            {
+                int index = Array.IndexOf(rack, tile);
+                if (index == -1)
+                {
+                    throw new InvalidOperationException("Attempt to swap a tile you don't hold");
+                }
+
+                rack[index] = GetCharFromRemainingTiles();
+            }
+
+            player.Tiles = new string(rack);
+            RemainingTiles += tiles;
+
+            LastMoveDescription = $"{player.Name} swapped {tiles.Length} tiles";
+            LastMove = DateTime.Now;
+        }
+
         // We need to "hide" the indexer from the base class in order to
         // leave the getter unchanged (pass through to base), but add
         // a new setter where there wasn't one at all in the base class

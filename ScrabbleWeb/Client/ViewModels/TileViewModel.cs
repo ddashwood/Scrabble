@@ -18,6 +18,7 @@ namespace ScrabbleWeb.Client.ViewModels
         public bool Valid { get; set; }
         public bool Invalid { get; set; }
         public bool Centre { get; set; }
+        public bool Swapping { get; set; }
 
         public char[] MultiplierLetters { get; private set; }
         private string multiplierClass;
@@ -98,6 +99,10 @@ namespace ScrabbleWeb.Client.ViewModels
                 if (Centre && Contents == null)
                 {
                     result += " tile-container-centre";
+                }
+                if (Swapping)
+                {
+                    result += " tile-swapping";
                 }
 
                 return result;

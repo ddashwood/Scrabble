@@ -15,6 +15,10 @@ namespace ScrabbleWeb.Client.ViewModels
         public bool IsValidMove { get; set; }
         public string Message { get; set; }
         public string MessageBootstrapContext { get; set; }
+        public bool IsSwapping { get; private set; }
+        public bool[] SwappingTiles { get; private set; }
+
+        public bool CanSwap => Game.TilesRemaining > 0;
 
         private Func<Task<char>> blankTileGetter;
         private Action stateHasChanged;
@@ -26,6 +30,17 @@ namespace ScrabbleWeb.Client.ViewModels
             this.blankTileGetter = blankTileGetter;
             this.stateHasChanged = stateHasChanged;
             this.jsRuntime = jsRuntime;
+        }
+
+        public void StartSwapping()
+        {
+            SwappingTiles = new bool[Game.MyTiles.Length];
+            IsSwapping = true;
+        }
+
+        public void StopSwapping()
+        {
+            IsSwapping = false;
         }
 
         public TileViewModel GetBoardTile(int x, int y)
@@ -53,11 +68,15 @@ namespace ScrabbleWeb.Client.ViewModels
                     _ => null
                 },
                 Multiplier = GameBase.SquareMultiplier(x, y),
-                Clickable = (TileBeingMoved == null) ? userTile != ' ' : (contents == null || TileBeingMoved.Equals(position)),
+                // Clickable - always false if we're swapping
+                // If we're not swapping, then if no tile is being moved, only allow clicking on user-placed tiles
+                //                        if a tile *is* being moved, only allow clicking on blank squares, or on the tile being moved
+                Clickable = !IsSwapping && ((TileBeingMoved == null) ? userTile != ' ' : (contents == null || TileBeingMoved.Equals(position))),
                 Selected = position.Equals(TileBeingMoved),
                 PartOfLastMove = Game.LastMoveTiles.Exists(t => (t.X, t.Y) == (x, y)),
                 Valid = userTile != ' ' && IsValidMove,
                 Invalid = userTile != ' ' && !IsValidMove,
+                Swapping = false,
                 Centre = x == (GameBase.BOARD_WIDTH - 1) / 2 && y == (GameBase.BOARD_HEIGHT - 1) / 2,
                 OnClickCallback = () => ClickOnSpace(position)
             };
@@ -73,6 +92,42 @@ namespace ScrabbleWeb.Client.ViewModels
             };
             var position = new RackPosition(Game, space);
 
+
+            bool clickable;
+            if (TileBeingMoved == null)
+            {
+                if (IsSwapping)
+                {
+                    // If we're in swapping mode, allow clicking anywhere there is a tile -
+                    // but only if there are enough tiles remaining.
+                    // If there aren't enough tiles, only allow clicking on tiles areadly
+                    // selected, so they can be de-selected
+                    clickable = contents != null &&
+                        (SwappingTiles.Count(t => t) < Game.TilesRemaining || SwappingTiles[space]);
+                }
+                else
+                {
+                    // If we're not in swapping mode, and no tile is being moved, allow clicking
+                    // anywhere there is a tile
+                    clickable = contents != null;
+                }
+            }
+            else
+            {
+                if (TileBeingMoved is BoardPosition)
+                {
+                    // If a tile *is* being moved, and it's from the board, only allow it to be
+                    // dropped where there's a space
+                    clickable = contents == null;
+                }
+                else
+                {
+                    // If a tile is being moved and it's from the rack, it can be dropped anywhere
+                    // on the rack
+                    clickable = true;
+                }
+            }
+
             return new TileViewModel
             {
                 Position = position,
@@ -84,11 +139,12 @@ namespace ScrabbleWeb.Client.ViewModels
                     _ => null
                 },
                 Multiplier = Multiplier.None,
-                Clickable = (TileBeingMoved == null) ? contents != null : true,
+                Clickable = clickable,
                 Selected = position.Equals(TileBeingMoved),
                 PartOfLastMove = false,
                 Valid = false,
                 Invalid = false,
+                Swapping = IsSwapping && SwappingTiles[space],
                 Centre = false,
                 OnClickCallback = () => ClickOnSpace(position)
             };
@@ -96,7 +152,11 @@ namespace ScrabbleWeb.Client.ViewModels
 
         public async Task ClickOnSpace(ITilePosition position)
         {
-            if(TileBeingMoved == null)
+            if (IsSwapping && position is RackPosition rackPosition)
+            {
+                SwappingTiles[rackPosition.Space] = !SwappingTiles[rackPosition.Space];
+            }
+            else if(TileBeingMoved == null)
             {
                 // Start moving a tile
                 TileBeingMoved = position;

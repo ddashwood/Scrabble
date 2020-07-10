@@ -7,7 +7,7 @@
 # Project specific stuff
 
 # Sqlite database
-scrabble.db
+*.db
 
 # User-specific files
 *.suo

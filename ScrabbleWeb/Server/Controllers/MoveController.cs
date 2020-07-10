@@ -129,5 +129,28 @@ namespace ScrabbleWeb.Server.Controllers
 
             return Ok(new MoveResultDto(game.ToDto(userId)));
         }
+
+        [HttpPost("/api/swap/{id}")]
+        public async Task<ActionResult<MoveResultDto>> Swap([FromBody]string tiles, int id)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value;
+            GameData gameData = await context.Games.Include(g => g.LastMoveTiles).SingleAsync(g => g.GameId == id);
+            if (gameData.Player1Id != userId && gameData.Player2Id != userId)
+            {
+                return Forbid();
+            }
+
+            Game game = await context.Games.Where(g => g.GameId == id).ToGames(context, mapper).SingleAsync();
+            game.Swap(userId, tiles);
+
+            mapper.Map(game, gameData);
+
+            await context.SaveChangesAsync();
+            var otherUser = gameData.Player1Id == userId ? gameData.Player2Id : gameData.Player1Id;
+            await hubContext.Clients.All.SendAsync("ReceiveMove", otherUser, id);
+
+            return Ok(new MoveResultDto(game.ToDto(userId)));
+
+        }
     }
 }

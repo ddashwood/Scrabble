@@ -205,7 +205,7 @@ app {
     vertical-align: top;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    overflow: visible;
     cursor: default;
     user-select: none;
 }
@@ -220,6 +220,11 @@ app {
 
         .tile-space .tile-container.tile-last-move {
             background-color:darkgoldenrod;
+        }
+
+        .tile-space .tile-container.tile-swapping {
+            top: -10px;
+            border: 1px solid black;
         }
 
 .tile-container.tile-container-centre {
