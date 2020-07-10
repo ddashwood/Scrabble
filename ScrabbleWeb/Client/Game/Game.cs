@@ -16,12 +16,14 @@ namespace ScrabbleWeb.Client.Game
         {
             mapper.Map(dto, this);
 
+            MyOriginalTiles = (char[])MyTiles.Clone();
             Move = new MoveBase(this);
         }
 
         public string MyUserId { get; set; }
         public int GameId { get; set; }
         public char[] MyTiles { get; set; }
+        public char[] MyOriginalTiles { get; set; } // Used when recalling tiles
         public bool MyMove { get; set; }
         public int MyScore { get; set; }
         public int OtherScore { get; set; }

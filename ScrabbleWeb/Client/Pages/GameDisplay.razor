@@ -234,19 +234,8 @@ else
 
     private void Recall()
     {
-        // Place the tiles back on the rack
-        foreach (var placement in game.Move.Placements)
-        {
-            if (placement.Tile >= 'A' && placement.Tile <= 'Z')
-            {
-                game.MyTiles[Array.IndexOf(game.MyTiles, ' ')] = placement.Tile;
-            }
-            else
-            {
-                game.MyTiles[Array.IndexOf(game.MyTiles, ' ')] = '*';
-            }
-        }
-        // Then create a new move with no placements in it
+        // Restore the tiles to their original list, and create a new, blank move
+        game.MyTiles = (char[])game.MyOriginalTiles.Clone();
         game.Move = new MoveBase(game);
         tileBeingMoved = null;
 
@@ -377,14 +366,38 @@ else
             // Also, check if the user is moving tiles around on the rack
             else if (tileBeingMoved is RackPosition rackPosition1 && position is RackPosition rackPosition2)
             {
-                (game.MyTiles[rackPosition1.Space], game.MyTiles[rackPosition2.Space]) =
-                    (game.MyTiles[rackPosition2.Space], game.MyTiles[rackPosition1.Space]);
+                MoveTilesOnRack(rackPosition1, rackPosition2);
 
                 tileBeingMoved = null;
             }
         }
 
         StateHasChanged();
+    }
+
+    private void MoveTilesOnRack(RackPosition from, RackPosition to)
+    {
+        char beingMoved = from.GetTile();
+
+        if (from.Space < to.Space)
+        {
+            // Moving tile to the right - shuffle intermmediate tiles to the left
+            for (int i = from.Space; i < to.Space; i++)
+            {
+                game.MyTiles[i] = game.MyTiles[i + 1];
+            }
+        }
+        else
+        {
+            // Moving tile to the left - shuffle intermmediate tiles to the right
+            for (int i = from.Space; i > to.Space; i--)
+            {
+                game.MyTiles[i] = game.MyTiles[i - 1];
+            }
+        }
+
+        game.MyTiles[to.Space] = beingMoved;
+
     }
 
     private async Task ClickOnEmptySpace(ITilePosition position)
