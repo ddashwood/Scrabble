@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using ScrabbleWeb.Client.Game;
+using ScrabbleWeb.Client.Models;
 using ScrabbleWeb.Shared;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace ScrabbleWeb.Client.Mapping
     {
         public AutoMapperProfile()
         {
-            CreateMap<GameDto, Game.Game>().ReverseMap();
+            CreateMap<GameDto, Models.Game>().ReverseMap();
         }
     }
 }

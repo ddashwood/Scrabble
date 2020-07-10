@@ -1,44 +1,44 @@
-﻿@using ScrabbleWeb.Client.Game
+﻿@using ScrabbleWeb.Client.Models
 
-    <div class="message">
-        <h3 class="mb-3">
-            Your game with @Game.OtherName
-        </h3>
+<div class="message">
+    <h3 class="mb-3">
+        Your game with @Game.OtherName
+    </h3>
 
-        @if (Game.Winner != ScrabbleWeb.Shared.WinnerDto.NotFinished || Game.MyMove)
-        {
-            // If other player has just played, or if this game has finished
-            <p>@Game.LastMoveDescription</p>
-        }
+    @if (Game.Winner != ScrabbleWeb.Shared.WinnerDto.NotFinished || Game.MyMove)
+    {
+        // If other player has just played, or if this game has finished
+        <p>@Game.LastMoveDescription</p>
+    }
 
-        <p class="@($"text-{BootstrapContext}")">
-            @ChildContent
-        </p>
+    <p class="@($"text-{BootstrapContext}")">
+        @ChildContent
+    </p>
 
-        @switch (Game.Winner)
-        {
-            case ScrabbleWeb.Shared.WinnerDto.NotFinished:
-                if (!Game.MyMove)
-                {
-                    <p>Waiting for @Game.OtherName to play</p>
-                }
-                break;
-            case ScrabbleWeb.Shared.WinnerDto.YouWon:
-                <p class="text-success">You won!</p>
-                break;
-            case ScrabbleWeb.Shared.WinnerDto.OtherPlayerWon:
-                <p class="text-danger">@Game.OtherName won</p>
-                break;
-            case ScrabbleWeb.Shared.WinnerDto.Draw:
-                <p class="text-primary">The game ended in a draw</p>
-                break;
-        }
+    @switch (Game.Winner)
+    {
+        case ScrabbleWeb.Shared.WinnerDto.NotFinished:
+            if (!Game.MyMove)
+            {
+                <p>Waiting for @Game.OtherName to play</p>
+            }
+            break;
+        case ScrabbleWeb.Shared.WinnerDto.YouWon:
+            <p class="text-success">You won!</p>
+            break;
+        case ScrabbleWeb.Shared.WinnerDto.OtherPlayerWon:
+            <p class="text-danger">@Game.OtherName won</p>
+            break;
+        case ScrabbleWeb.Shared.WinnerDto.Draw:
+            <p class="text-primary">The game ended in a draw</p>
+            break;
+    }
 
-        <div class="d-flex justify-content-between">
-            <div class="m-2">@Game.MyName : @Game.MyScore</div>
-            <div class="m-2">@Game.OtherScore : @Game.OtherName</div>
-        </div>
+    <div class="d-flex justify-content-between">
+        <div class="m-2">@Game.MyName : @Game.MyScore</div>
+        <div class="m-2">@Game.OtherScore : @Game.OtherName</div>
     </div>
+</div>
 
 @code {
     [Parameter] public RenderFragment ChildContent { get; set; }

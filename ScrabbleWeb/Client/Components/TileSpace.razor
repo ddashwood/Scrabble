@@ -1,0 +1,37 @@
+﻿@using ScrabbleWeb.Client.ViewModels 
+
+<div class=@TileVm.TileSpaceClass @onclick=Click>
+    <div class=@TileVm.TileContainerClass>
+        @if (TileVm.Contents == null)
+        {
+            @if (TileVm.Centre)
+            {
+                <span class="oi oi-star" aria-hidden="true"></span>
+            }
+            else
+            {
+                <div class="tile-container-multiplier1">@TileVm.MultiplierLetters[0]</div>
+                <div class="tile-container-multiplier2">@TileVm.MultiplierLetters[1]</div>
+            }
+        }
+        else
+        {
+            <div class="tile-content">@TileVm.Contents</div>
+            <div class="tile-content-score">@TileVm.Score</div>
+        }
+    </div>
+</div>
+
+
+@code {
+    [Parameter] public TileViewModel TileVm { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    private async Task Click()
+    {
+        if (TileVm.Clickable)
+        {
+            await OnClick.InvokeAsync(null);
+        }
+    }
+}

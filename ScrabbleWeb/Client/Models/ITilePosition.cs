@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ScrabbleWeb.Client.Game
+namespace ScrabbleWeb.Client.Models
 {
-    interface ITilePosition
+    public interface ITilePosition
     {
         void RemoveTile();
         Task AddTile(char tile);

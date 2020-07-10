@@ -5,7 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace ScrabbleWeb.Client.Game
+namespace ScrabbleWeb.Client.Models
 {
     public class BoardPosition : ITilePosition
     {

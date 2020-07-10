@@ -2,8 +2,9 @@
 
 @using ScrabbleMoveChecker
 @using ScrabbleWeb.Shared
-@using ScrabbleWeb.Client.Game
+@using ScrabbleWeb.Client.Models
 @using ScrabbleWeb.Client.Components
+@using ScrabbleWeb.Client.ViewModels
 @using System.Linq
 @using AutoMapper
 @using Microsoft.AspNetCore.SignalR.Client
@@ -15,14 +16,14 @@
 @inject IJSRuntime JSRuntime;
 
 
-@if (game == null)
+@if (gameVm == null)
 {
     <p>Loading game</p>
 }
 else
 {
-    <GameMessage BootstrapContext="@messageContext" Game="@game">
-        @message
+    <GameMessage BootstrapContext="@gameVm.MessageBootstrapContext" Game="@gameVm.Game">
+        @gameVm.Message
     </GameMessage>
 
     <div class="game" id="game">
@@ -33,140 +34,41 @@ else
                     <div class="tile-row">
                         @for (int x = 0; x < GameBase.BOARD_WIDTH; x++)
                         {
-                            char tile = game[x, y];
-                            char userTile = ' ';
-                            var multiplier = GameBase.SquareMultiplier(x, y);
-                            string multiplierClass = "";
-                            string char1 = "";
-                            string char2 = "";
-                            bool boardSpaceEmpty = false;
-                            ITilePosition position = new BoardPosition(game, x, y, GetBlankTileLetter);
-                            bool thisSelected = position.Equals(tileBeingMoved);
-
-                            if (tile == ' ')
-                            {
-                                userTile = game.Move[x, y];
-                            }
-
-                            if (tile == ' ' && userTile == ' ')
-                            {
-                                boardSpaceEmpty = true;
-
-                                // Multipliers only affect tiles that aren't played on yet
-                                switch (multiplier)
-                                {
-                                    case Multiplier.DoubleLetter:
-                                        (multiplierClass, char1, char2) = ("double-letter", "D", "L");
-                                        break;
-                                    case Multiplier.TrippleLetter:
-                                        (multiplierClass, char1, char2) = ("tripple-letter", "T", "L");
-                                        break;
-                                    case Multiplier.DoubleWord:
-                                        (multiplierClass, char1, char2) = ("double-word", "D", "W");
-                                        break;
-                                    case Multiplier.TrippleWord:
-                                        (multiplierClass, char1, char2) = ("tripple-word", "T", "W");
-                                        break;
-                                }
-                            }
-                            bool clickable = (tileBeingMoved == null) ? userTile != ' ' : boardSpaceEmpty;
-
-
-                            <div class=@($"tile-space {multiplierClass}{(thisSelected ? " tile-selected": "")}{(clickable ? " clickable": "")}")
-                                 @onclick="e => (boardSpaceEmpty ?
-                                                        ClickOnEmptySpace(position) :
-                                                 userTile != ' ' ?
-                                                        ClickOnMovableTile(position) :
-                                                        Task.CompletedTask)">
-                                @if (tile != ' ')
-                                {
-                                    <div class=@($"tile-container{(game.LastMoveTiles.Exists(t => (t.X, t.Y) == (x,y))?" tile-last-move":"")}")>
-                                        <div class="tile-content">@tile.ToString().ToUpper()</div>
-                                        @*Non-capital means a blank tile, so no score*@
-                                        @if (tile >= 'A' && tile <= 'Z')
-                                        {
-                                            <div class="tile-content-score">@GameBase.LetterScore(tile)</div>
-                                        }
-                                    </div>
-                                }
-                                else if (userTile != ' ')
-                                {
-                                    string containerClass = isValidMove ? "tile-valid" : "tile-invalid";
-                                    <div class=@($"tile-container {containerClass}")>
-                                        <div class="tile-content">@userTile.ToString().ToUpper()</div>
-                                        @*Non-capital means a blank tile, so no score*@
-                                        @if (userTile >= 'A' && userTile <= 'Z')
-                                        {
-                                            <div class="tile-content-score">@GameBase.LetterScore(userTile)</div>
-                                        }
-                                    </div>
-                                }
-                                else if (!string.IsNullOrEmpty(multiplierClass))
-                                {
-                                    <div class="tile-container">
-                                        <div class="tile-container-multiplier1">@char1</div>
-                                        <div class="tile-container-multiplier2">@char2</div>
-                                    </div>
-                                }
-                                else if (x == (GameBase.BOARD_WIDTH - 1) / 2 && y == (GameBase.BOARD_HEIGHT - 1) / 2)
-                                {
-                                    <div class="tile-container tile-container-centre">
-                                        <div class="tile-content"><span class="oi oi-star" aria-hidden="true"></span></div>
-                                    </div>
-                                }
-
-                            </div>
+                            var tileVm = gameVm.GetBoardTile(x, y);
+                            <TileSpace TileVm=tileVm OnClick=tileVm.OnClick/>
                         }
                     </div>
                 }
 
                 @*Not really part of the board, but including it in the board
                     div means it aligns with the board*@
-                <div class="float-left mt-4">Number of tiles remaining: @game.TilesRemaining</div>
+                <div class="float-left mt-4">Number of tiles remaining: @gameVm.Game.TilesRemaining</div>
             </div>
         </div>
 
         <div class="game-element-container">
             <div class="player-tiles">
                 <div class="tile-row">
-                    @for (int i = 0; i < game.MyTiles.Length; i++)
+                    @for (int i = 0; i < gameVm.Game.MyTiles.Length; i++)
                     {
-                        int space = i;
-                        char tile = game.MyTiles[space];
-                        ITilePosition position = new RackPosition(game, space);
-                        bool userSpaceEmpty = tile == ' ';
-                        bool thisSelected = position.Equals(tileBeingMoved);
-                        bool clickable = (tileBeingMoved == null) ? !userSpaceEmpty : (tileBeingMoved is RackPosition || userSpaceEmpty);
-
-                        <div class="@($"tile-space{(thisSelected ? " tile-selected" : "")}{(clickable? " clickable": "")}")"
-                             @onclick="e => (userSpaceEmpty ? ClickOnEmptySpace(position) : ClickOnMovableTile(position))">
-                            @if (!userSpaceEmpty)
-                            {
-                                <div class="tile-container">
-                                    @* If not a capital letter, it's a blank tile *@
-                                    @if (tile >= 'A' && tile <= 'Z')
-                                    {
-                                        <div class="tile-content">@tile.ToString().ToUpper()</div>
-                                        <div class="tile-content-score">@GameBase.LetterScore(tile)</div>
-                                    }
-                                </div>
-                            }
-                        </div>
+                        var tileVm = gameVm.GetRackTile(i);
+                        <TileSpace TileVm=tileVm OnClick=tileVm.OnClick />
                     }
                 </div>
             </div>
         </div>
+
         <div class="buttons mt-4 mb-2">
-            @if (game.Winner == WinnerDto.NotFinished)
+            @if (gameVm.Game.Winner == WinnerDto.NotFinished)
             {
-                if (game.Move.Placements.Count() == 0)
+                if (gameVm.Game.Move.Placements.Count() == 0)
                 {
-                    <button @onclick=Pass disabled="@(!game.MyMove)">Pass</button>
-                    <button onclick="alert('Coming soon!')" disabled="@(!game.MyMove)">Swap</button>
+                    <button @onclick=Pass disabled="@(!gameVm.Game.MyMove)">Pass</button>
+                    <button onclick="alert('Coming soon!')" disabled="@(!gameVm.Game.MyMove)">Swap</button>
                 }
                 else
                 {
-                    <button @onclick=Play disabled="@(!game.MyMove)">Play</button>
+                    <button @onclick=Play disabled="@(!gameVm.Game.MyMove)">Play</button>
                     <button @onclick=Recall>Recall</button>
                 }
                 <button @onclick=Resign>Resign</button>
@@ -180,19 +82,15 @@ else
 }
 
 @code {
-    private static Func<Task> refreshAction;
+    private static Func<Task> reconnectAction;
     [Parameter] public int GameId { get; set; }
-    Game game;
-    ITilePosition tileBeingMoved;
-    string message;
-    string messageContext;
-    bool isValidMove;
+    GameViewModel gameVm;
     private HubConnection hubConnection;
 
     protected override async Task OnInitializedAsync()
     {
         await SetupHub();
-        refreshAction = RefreshActionAsync;
+        reconnectAction = ReconnectActionAsync;
     }
 
     protected override async Task OnParametersSetAsync()
@@ -203,65 +101,41 @@ else
     private async Task LoadGameAsync()
     {
         var data = await Http.GetFromJsonAsync<GameDto>($"/api/game/{GameId}");
-        int count = data.LastMoveTiles.Count();
-        game = new Game(data, mapper);
-    }
-
-
-    private void UpdateMessage()
-    {
-        if (game.Move.Placements.Count() == 0)
-        {
-            // If there are no tiles placed, ignore any messages from the server
-            // and remove any previous messages
-            message = "";
-            return;
-        }
-
-        int score = game.Move.GetScore(out string error);
-        isValidMove = string.IsNullOrEmpty(error);
-        if (isValidMove)
-        {
-            message = "Score: " + score;
-            messageContext = "primary";
-        }
-        else
-        {
-            message = error;
-            messageContext = "danger";
-        }
+        var game = new Game(data, mapper);
+        gameVm = new GameViewModel(game, GetBlankTileLetter, StateHasChanged, JSRuntime);
     }
 
     private void Recall()
     {
         // Restore the tiles to their original list, and create a new, blank move
-        game.MyTiles = (char[])game.MyOriginalTiles.Clone();
-        game.Move = new MoveBase(game);
-        tileBeingMoved = null;
+        gameVm.Game.MyTiles = (char[])gameVm.Game.MyOriginalTiles.Clone();
+        gameVm.Game.Move = new MoveBase(gameVm.Game);
+        gameVm.TileBeingMoved = null;
 
-        UpdateMessage();
+        gameVm.UpdateMessage();
     }
 
     private async Task Play()
     {
-        var response = await Http.PostAsJsonAsync($"/api/move/{GameId}", game.Move.Placements);
+        var response = await Http.PostAsJsonAsync($"/api/move/{GameId}", gameVm.Game.Move.Placements);
         var responseData = await response.Content.ReadFromJsonAsync<MoveResultDto>();
         if (response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
         {
-            message = responseData.Error;
-            messageContext = "danger";
+            gameVm.Message = responseData.Error;
+            gameVm.MessageBootstrapContext = "danger";
         }
         else if (response.StatusCode != System.Net.HttpStatusCode.OK)
         {
-            message = "Something went wrong";
-            messageContext = "danger";
+            gameVm.Message = "Something went wrong";
+            gameVm.MessageBootstrapContext = "danger";
         }
         else
         {
             // Success - reload the board (including new tiles)
-            game = new Game(responseData.GameDto, mapper);
-            message = "Move completed";
-            messageContext = "success";
+            var game = new Game(responseData.GameDto, mapper);
+            gameVm = new GameViewModel(game, GetBlankTileLetter, StateHasChanged, JSRuntime);
+            gameVm.Message = "Move completed";
+            gameVm.MessageBootstrapContext = "success";
         }
         // If the contents of the message box have changed, this can result in the board
         // scrolling off the screen. Here, we ensure that the board stays in the same
@@ -280,19 +154,20 @@ else
             var responseData = await response.Content.ReadFromJsonAsync<MoveResultDto>();
             if (response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
             {
-                message = responseData.Error;
-                messageContext = "danger";
+                gameVm.Message = responseData.Error;
+                gameVm.MessageBootstrapContext = "danger";
             }
             else if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                message = "Something went wrong";
-                messageContext = "danger";
+                gameVm.Message = "Something went wrong";
+                gameVm.MessageBootstrapContext = "danger";
             }
             else
             {
                 // Success - reload the board
-                game = new Game(responseData.GameDto, mapper);
-                UpdateMessage();
+                var game = new Game(responseData.GameDto, mapper);
+                gameVm = new GameViewModel(game, GetBlankTileLetter, StateHasChanged, JSRuntime);
+                gameVm.UpdateMessage();
             }
             // If the contents of the message box have changed, this can result in the board
             // scrolling off the screen. Here, we ensure that the board stays in the same
@@ -312,19 +187,20 @@ else
             var responseData = await response.Content.ReadFromJsonAsync<MoveResultDto>();
             if (response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
             {
-                message = responseData.Error;
-                messageContext = "danger";
+                gameVm.Message = responseData.Error;
+                gameVm.MessageBootstrapContext = "danger";
             }
             else if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                message = "Something went wrong";
-                messageContext = "danger";
+                gameVm.Message = "Something went wrong";
+                gameVm.MessageBootstrapContext = "danger";
             }
             else
             {
                 // Success - reload the board
-                game = new Game(responseData.GameDto, mapper);
-                UpdateMessage();
+                var game = new Game(responseData.GameDto, mapper);
+                gameVm = new GameViewModel(game, GetBlankTileLetter, StateHasChanged, JSRuntime);
+                gameVm.UpdateMessage();
             }
             // If the contents of the message box have changed, this can result in the board
             // scrolling off the screen. Here, we ensure that the board stays in the same
@@ -335,104 +211,7 @@ else
         }
     }
 
-    private async Task ClickOnMovableTile(ITilePosition position)
-    {
-        if (tileBeingMoved == null)
-        {
-            tileBeingMoved = position;
-        }
-        else
-        {
-            // Can't start a move if a move is already happening
-            // If user clicks on the thing already moving, cancel the move
-            if (tileBeingMoved.Equals(position))
-            {
-                // Unless it's a blank tile. The user may "move" a blank tile to
-                // the same square to change its letter
-                if (tileBeingMoved.GetTile() < 'A' || tileBeingMoved.GetTile() > 'Z')
-                {
-                    tileBeingMoved.RemoveTile();
-                    await tileBeingMoved.AddTile('*');
-                    if (tileBeingMoved.GetTile() == '#')
-                    {
-                        // The user did not choose a letter
-                        RemoveBlankToRack(tileBeingMoved);
-                        UpdateMessage();
-                    }
-                }
-
-                tileBeingMoved = null;
-            }
-            // Also, check if the user is moving tiles around on the rack
-            else if (tileBeingMoved is RackPosition rackPosition1 && position is RackPosition rackPosition2)
-            {
-                MoveTilesOnRack(rackPosition1, rackPosition2);
-
-                tileBeingMoved = null;
-            }
-        }
-
-        StateHasChanged();
-    }
-
-    private void MoveTilesOnRack(RackPosition from, RackPosition to)
-    {
-        char beingMoved = from.GetTile();
-
-        if (from.Space < to.Space)
-        {
-            // Moving tile to the right - shuffle intermmediate tiles to the left
-            for (int i = from.Space; i < to.Space; i++)
-            {
-                game.MyTiles[i] = game.MyTiles[i + 1];
-            }
-        }
-        else
-        {
-            // Moving tile to the left - shuffle intermmediate tiles to the right
-            for (int i = from.Space; i > to.Space; i--)
-            {
-                game.MyTiles[i] = game.MyTiles[i - 1];
-            }
-        }
-
-        game.MyTiles[to.Space] = beingMoved;
-
-    }
-
-    private async Task ClickOnEmptySpace(ITilePosition position)
-    {
-        if (tileBeingMoved == null)
-        {
-            // No move is taking place
-            return;
-        }
-
-        await position.AddTile(tileBeingMoved.GetTile());
-        tileBeingMoved.RemoveTile();
-
-        if (position.GetTile() == '#')
-        {
-            // The user placed a blank tile, but then did not choose a letter
-            RemoveBlankToRack(position);
-        }
-
-        tileBeingMoved = null;
-        UpdateMessage();
-        // If the contents of the message box have changed, this can result in the board
-        // scrolling off the screen. Here, we ensure that the board stays in the same
-        // position
-        await JSRuntime.InvokeVoidAsync("scrollPreventer.saveTop", "game");
-        StateHasChanged();
-        await JSRuntime.InvokeVoidAsync("scrollPreventer.restoreTop", "game");
-    }
-
-    private void RemoveBlankToRack(ITilePosition position)
-    {
-        position.RemoveTile();
-        game.MyTiles[Array.IndexOf(game.MyTiles, ' ')] = '*';
-    }
-
+    // Passed to the GameViewModel, which uses it to prompt user for a letter for a blank tile
     private async Task<char> GetBlankTileLetter()
     {
         var result = await Modal.Show<BlankLetterSelector>("Select a Letter").Result;
@@ -461,30 +240,23 @@ else
     [JSInvokable]
     public static async Task RefreshConnectionAsync()
     {
-        if (refreshAction != null)
+        if (reconnectAction != null)
         {
-            await (refreshAction?.Invoke());
+            await (reconnectAction?.Invoke());
         }
     }
 
-    private async Task RefreshActionAsync()
+    private async Task ReconnectActionAsync()
     {
         if (hubConnection == null)
         {
             return;
         }
 
-        //if (hubConnection.State == HubConnectionState.Connected || hubConnection.State == HubConnectionState.Connecting)
-        //{
-        //    await JSRuntime.InvokeVoidAsync("alert", "Still connected");
-        //    isRefreshing = false;
-        //    return;
-        //}
-
         // On mobiles, the hub can disconnect when the browser is closed. This will re-start it.
         await hubConnection.StopAsync();
         await LoadGameAsync();
-        UpdateMessage();
+        gameVm.UpdateMessage();
         StateHasChanged();
         await SetupHub();
     }
@@ -497,10 +269,10 @@ else
 
         hubConnection.On<string, int>("ReceiveMove", async (userId, gameId) =>
         {
-            if (game.MyUserId == userId && gameId == GameId)
+            if (gameVm.Game.MyUserId == userId && gameId == GameId)
             {
                 await LoadGameAsync();
-                UpdateMessage();
+                gameVm.UpdateMessage();
                 StateHasChanged();
             }
         });

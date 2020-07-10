@@ -222,7 +222,7 @@ app {
             background-color:darkgoldenrod;
         }
 
-.tile-container-centre {
+.tile-container.tile-container-centre {
     width: 1.5rem;
     height: 1.5rem;
     line-height: 1.5rem;
@@ -257,7 +257,7 @@ app {
     left: -2px;
 }
 
-.tile-container-centre .tile-content {
+.tile-container.tile-container-centre .tile-content {
     left: 0;
 }
 
