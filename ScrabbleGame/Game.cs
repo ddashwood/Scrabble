@@ -248,7 +248,7 @@ namespace ScrabbleGame
             Player1.Score = 0;
             Player2.Score = 0;
             Winner = Winner.NotFinished;
-            lock (randLock) // Must lock , because random iss static, and therefore shared between threads
+            lock (randLock) // Must lock , because random is static, and therefore shared between threads
             {
                 NextPlayer = (PlayerSelection)random.Next(2);
             }
@@ -264,7 +264,7 @@ namespace ScrabbleGame
             }
 
             int position;
-            lock (randLock) // Must lock , because random iss static, and therefore shared between threads
+            lock (randLock) // Must lock , because random is static, and therefore shared between threads
             {
                 position = random.Next(RemainingTiles.Length);
             }

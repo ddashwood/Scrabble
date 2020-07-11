@@ -72,7 +72,7 @@ else
                 }
                 else
                 {
-                    <button @onclick=Play disabled="@(!gameVm.Game.MyMove)">Play</button>
+                    <button @onclick=Play disabled="@(!gameVm.Game.MyMove  || !gameVm.IsValidMove)">Play</button>
                     <button @onclick=Recall>Recall</button>
                 }
                 <button @onclick=Resign>Resign</button>
