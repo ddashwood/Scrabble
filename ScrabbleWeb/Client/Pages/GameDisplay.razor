@@ -9,6 +9,14 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime;
 
+@if (IsSubmitting)
+{
+    <div class="overlay">
+        <div class="overlay-content">
+            <h4>Submitting...</h4>
+        </div>
+    </div>
+}
 
 @if (gameVm == null)
 {
@@ -61,35 +69,47 @@ else
             {
                 if (gameVm.IsSwapping)
                 {
-                    <button @onclick=StopSwap>Cancel</button>
-                    <button @onclick=DoSwap disabled="@(!gameVm.SwappingTiles.Any(t => t))">Swap</button>
+                    <button @onclick=StopSwap disabled="@Disabled()">Cancel</button>
+                    <button @onclick=DoSwap disabled="@Disabled(!gameVm.SwappingTiles.Any(t => t))">Swap</button>
 
                 }
                 else if (gameVm.Game.Move.Placements.Count() == 0)
                 {
-                    <button @onclick=Pass disabled="@(!gameVm.Game.MyMove)">Pass</button>
-                    <button @onclick=StartSwap disabled="@(!gameVm.Game.MyMove || !gameVm.CanSwap)">Swap</button>
+                    <button @onclick=Pass disabled="@Disabled(!gameVm.Game.MyMove)">Pass</button>
+                    <button @onclick=StartSwap disabled="@Disabled(!gameVm.Game.MyMove || !gameVm.CanSwap)">Swap</button>
                 }
                 else
                 {
-                    <button @onclick=Play disabled="@(!gameVm.Game.MyMove  || !gameVm.IsValidMove)">Play</button>
-                    <button @onclick=Recall>Recall</button>
+                    <button @onclick=Play disabled="@Disabled(!gameVm.Game.MyMove  || !gameVm.IsValidMove)">Play</button>
+                    <button @onclick=Recall disabled="@Disabled()">Recall</button>
                 }
-                <button @onclick=Resign>Resign</button>
+                <button @onclick=Resign disabled="@Disabled()">Resign</button>
             }
             else
             {
-                <button @onclick=Rematch>Rematch</button>
+                <button @onclick=Rematch disabled="@Disabled()">Rematch</button>
             }
         </div>
     </div>
 }
 
 @code {
-    private static Func<Task> reconnectAction;
     [Parameter] public int GameId { get; set; }
-    GameViewModel gameVm;
+    private static Func<Task> reconnectAction;
+    private GameViewModel gameVm;
     private HubConnection hubConnection;
+
+    private bool isSubmitting;
+    private bool IsSubmitting
+    {
+        get { return isSubmitting; }
+        set
+        {
+            isSubmitting = value;
+            StateHasChanged();
+        }
+    }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -108,6 +128,8 @@ else
         var game = new Game(data, mapper);
         gameVm = new GameViewModel(game, GetBlankTileLetter, StateHasChanged, JSRuntime);
     }
+
+    private bool Disabled(bool buttonDisabled = false) => buttonDisabled || IsSubmitting;
 
     private void Recall()
     {
@@ -169,40 +191,47 @@ else
 
     private async Task Submit<T>(string requestUri, T value, string successMessage)
     {
-        var response = await Http.PostAsJsonAsync(requestUri, value);
-        var responseData = await response.Content.ReadFromJsonAsync<MoveResultDto>();
-        if (response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
+        await JSRuntime.InvokeVoidAsync("scrollPreventer.saveTop", "game");
+        IsSubmitting = true;
+        try
         {
-            gameVm.Message = responseData.Error;
-            gameVm.MessageBootstrapContext = "danger";
-        }
-        else if (response.StatusCode != System.Net.HttpStatusCode.OK)
-        {
-            gameVm.Message = "Something went wrong";
-            gameVm.MessageBootstrapContext = "danger";
-        }
-        else
-        {
-            // Success - reload the board (including new tiles)
-            var game = new Game(responseData.GameDto, mapper);
-            gameVm = new GameViewModel(game, GetBlankTileLetter, StateHasChanged, JSRuntime);
-            if (successMessage == null)
+            var response = await Http.PostAsJsonAsync(requestUri, value);
+            var responseData = await response.Content.ReadFromJsonAsync<MoveResultDto>();
+            if (response.StatusCode == System.Net.HttpStatusCode.UnprocessableEntity)
             {
-                gameVm.UpdateMessage();
+                gameVm.Message = responseData.Error;
+                gameVm.MessageBootstrapContext = "danger";
+            }
+            else if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                gameVm.Message = "Something went wrong";
+                gameVm.MessageBootstrapContext = "danger";
             }
             else
             {
-                gameVm.Message = successMessage;
-                gameVm.MessageBootstrapContext = "success";
+                // Success - reload the board (including new tiles)
+                var game = new Game(responseData.GameDto, mapper);
+                gameVm = new GameViewModel(game, GetBlankTileLetter, StateHasChanged, JSRuntime);
+                if (successMessage == null)
+                {
+                    gameVm.UpdateMessage();
+                }
+                else
+                {
+                    gameVm.Message = successMessage;
+                    gameVm.MessageBootstrapContext = "success";
+                }
             }
         }
-        // If the contents of the message box have changed, this can result in the board
-        // scrolling off the screen. Here, we ensure that the board stays in the same
-        // position
-        await JSRuntime.InvokeVoidAsync("scrollPreventer.saveTop", "game");
-        StateHasChanged();
-        await JSRuntime.InvokeVoidAsync("scrollPreventer.restoreTop", "game");
-
+        finally
+        {
+            IsSubmitting = false;
+            // If the contents of the message box have changed, this can result in the board
+            // scrolling off the screen. Here, we ensure that the board stays in the same
+            // position
+            StateHasChanged();
+            await JSRuntime.InvokeVoidAsync("scrollPreventer.restoreTop", "game");
+        }
     }
 
     // Passed to the GameViewModel, which uses it to prompt user for a letter for a blank tile
@@ -221,14 +250,22 @@ else
 
     private async Task Rematch()
     {
-        var response = await Http.PostAsync($"/api/game?rematch={GameId}", null);
-        var responseData = await response.Content.ReadFromJsonAsync<NewGameDto>();
-        if (response.StatusCode != System.Net.HttpStatusCode.OK)
+        IsSubmitting = true;
+        try
         {
-            throw new ApplicationException("Error " + responseData.Error);
-        }
+            var response = await Http.PostAsync($"/api/game?rematch={GameId}", null);
+            var responseData = await response.Content.ReadFromJsonAsync<NewGameDto>();
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                throw new ApplicationException("Error " + responseData.Error);
+            }
 
-        NavigationManager.NavigateTo($"/game/{responseData.NewGameId}");
+            NavigationManager.NavigateTo($"/game/{responseData.NewGameId}");
+        }
+        finally
+        {
+            IsSubmitting = false;
+        }
     }
 
     [JSInvokable]
