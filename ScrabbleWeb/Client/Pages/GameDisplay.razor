@@ -145,6 +145,7 @@ else
 
     private async Task Play()
     {
+        gameVm.TileBeingMoved = null;
         await Submit($"/api/move/{GameId}", gameVm.Game.Move.Placements, "Move completed");
     }
 
