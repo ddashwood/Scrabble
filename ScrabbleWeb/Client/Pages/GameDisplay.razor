@@ -94,7 +94,7 @@ else
 }
 
 @code {
-    [Parameter] public int GameId { get; set; }
+        [Parameter] public int GameId { get; set; }
     private static Func<Task> reconnectAction;
     private GameViewModel gameVm;
     private HubConnection hubConnection;
@@ -286,9 +286,14 @@ else
 
         // On mobiles, the hub can disconnect when the browser is closed. This will re-start it.
         await hubConnection.StopAsync();
-        await LoadGameAsync();
-        gameVm.UpdateMessage();
-        StateHasChanged();
+
+        if (!gameVm.Game.MyMove)
+        {
+            // Check whether the other player has played
+            await LoadGameAsync();
+            gameVm.UpdateMessage();
+            StateHasChanged();
+        }
         await SetupHub();
     }
 

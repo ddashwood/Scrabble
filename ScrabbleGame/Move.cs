@@ -79,13 +79,18 @@ namespace ScrabbleGame
 
         public IEnumerable<string> InvalidWords()
         {
+            HashSet<string> foundInvalidWords = new HashSet<string>();
+
             var words = FindWords();
             foreach (var word in words)
             {
-                var wordText = word.ToString();
+                var wordText = word.ToString().ToUpper();
                 if (!Game.CheckWord(wordText))
                 {
-                    yield return wordText.ToUpper();
+                    if (foundInvalidWords.Add(wordText))
+                    {
+                        yield return wordText;
+                    }
                 }
             }
         }
