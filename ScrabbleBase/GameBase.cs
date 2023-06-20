@@ -39,7 +39,7 @@ namespace ScrabbleBase
                 [(4,4)] = DoubleWord, [(10,4)] = DoubleWord,
                 [(1,5)] = TrippleLetter, [(5,5)] = TrippleLetter, [(9,5)] = TrippleLetter, [(13,5)] = TrippleLetter,
                 [(2,6)] = DoubleLetter, [(6,6)] = DoubleLetter, [(8, 6)] = DoubleLetter, [(12,6)] = DoubleLetter,
-                [(0,7)] = TrippleWord, [(3, 7)] = DoubleLetter, [(11,7)] = DoubleLetter, [(14,7)] = TrippleWord,
+                [(0,7)] = TrippleWord, [(3, 7)] = DoubleLetter, [(7, 7)] = DoubleWord, [(11,7)] = DoubleLetter, [(14,7)] = TrippleWord,
                 [(2,8)] = DoubleLetter, [(6,8)] = DoubleLetter, [(8, 8)] = DoubleLetter, [(12,8)] = DoubleLetter,
                 [(1,9)] = TrippleLetter, [(5,9)] = TrippleLetter, [(9,9)] = TrippleLetter, [(13,9)] = TrippleLetter,
                 [(4,10)] = DoubleWord, [(10,10)] = DoubleWord,

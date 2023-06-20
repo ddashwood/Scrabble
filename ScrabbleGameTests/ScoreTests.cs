@@ -141,7 +141,8 @@ namespace ScrabbleGameTests
 
             int actual = move.GetScore(out string _);
 
-            Assert.Equal(3, actual);
+            // Centre square is a double-word sqaure
+            Assert.Equal(6, actual);
         }
 
         [Fact]
@@ -161,9 +162,10 @@ namespace ScrabbleGameTests
 
             int actual = move.GetScore(out string _);
 
-            // Includes 50 point bonus for "Bingo"
-            // Also, one of the A's is on a double-letter
-            Assert.Equal(58, actual);
+            // One of the A's is on a double-letter, so the word score starts at 8
+            // The centre square is a double-word, so that changes the word score to 16
+            // Also includes 50 point bonus for "Bingo"
+            Assert.Equal(66, actual);
         }
 
         [Fact]

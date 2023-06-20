@@ -32,6 +32,7 @@ namespace ScrabbleGameTests
             });
 
             Assert.True(move.IsValidMove(out string _));
+            Assert.Equal(8, move.GetScore(out _)); // Should give double-word score for first move
         }
 
         [Fact]
